@@ -1,0 +1,11 @@
+docker-compose.yml
+Makefile
+traefik.yml
+.env
+
+###> symfony/framework-bundle ###
+/.env
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
