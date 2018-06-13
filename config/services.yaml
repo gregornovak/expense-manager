@@ -39,4 +39,3 @@ services:
         arguments: ['@twig', '@mailer']
         tags:
             - { name: kernel.event_listener, event: change.password.event.email_change_password_event, method: onMailChangePasswordEvent }
-
