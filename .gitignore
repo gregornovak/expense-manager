@@ -22,3 +22,10 @@ config/jwt
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
+
+### Docker - env ###
+.env 
+.env.dist
+Makefile
+docker-compose.yml
+docker-composer.yml.dist

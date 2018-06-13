@@ -14,19 +14,22 @@ use App\Entity\User;
 class LoginController extends Controller
 {
     /**
-     * @Route("/api/token", name="token_authentication")
+     * @Route("/api/login", name="token_authentication")
      * @Method("POST")
      */
     public function newTokenAction(Request $request): JsonResponse
     {
-        $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['username'=> $request->getUser()]);
+        $credentials = json_decode($request->getContent());
+        
+        $user = $this->getDoctrine()->getRepository(User::class)
+            ->findOneBy(['username'=> $credentials->username]);
 
         if (!$user) {
             throw $this->createNotFoundException();
         }
 
         $isValid = $this->get('security.password_encoder')
-            ->isPasswordValid($user, $request->getPassword());
+            ->isPasswordValid($user, $credentials->password);
 
         if (!$isValid) {
             throw new BadCredentialsException();
@@ -34,7 +37,7 @@ class LoginController extends Controller
 
         $token = $this->get('lexik_jwt_authentication.encoder')
             ->encode([
-                'username' => $user->getUsername(),
+                'username' => $credentials->username,
                 'exp' => time() + 3600 // 1 hour expiration
         ]);
 

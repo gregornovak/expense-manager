@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Book
 {
+    
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

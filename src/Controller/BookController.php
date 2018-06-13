@@ -18,14 +18,16 @@ class BookController extends FOSRestController
 {
 	/**
 	 * @Route("/books", name="get_books")
+     * @return array
      */
-    public function getBooksAction(): array
+    public function getBooksAction()
 	{
 		$em = $this->getDoctrine()->getManager();
-		$books = $em->getRepository(Book::class)->findAll();
-
+        $books = $em->getRepository(Book::class)->findAll();
+        
         if (!$books) {
-			throw new HttpException(400, "Invalid data");
+            return new JsonResponse(['data' => []]);
+			// throw new HttpException(400, "Invalid data");
 		}
 
 		return $books;
@@ -33,6 +35,8 @@ class BookController extends FOSRestController
 
 	/**
 	 * @Route("/books/{id}", name="get_book")
+     * @param int $id
+     * @return object|null
      */
     public function getBookAction(int $id): ?object
     {
@@ -52,6 +56,8 @@ class BookController extends FOSRestController
 
 	/**
 	 * @Route("/book/new", name="post_book")
+     * @param Request $request
+     * @return object|null
      */
     public function postBookAction(Request $request): ?object
     {
@@ -72,6 +78,9 @@ class BookController extends FOSRestController
 
 	/**
 	 * @Route("/books/edit/{id}", name="put_book")
+     * @param Request $request
+     * @param int $id
+     * @return object|null
 	 */
     public function putBookAction(Request $request, int $id): ?object
     {
@@ -92,6 +101,8 @@ class BookController extends FOSRestController
 
 	/**
 	 * @Route("/books/remove/{id}", name="delete_book")
+     * @param int $id
+     * @return object|null
 	 */
     public function deleteBookAction(int $id): ?object
     {

@@ -22,7 +22,7 @@ class MailRegistrationUserListener
         $user = $event->getUser();
         $email = $event->getUser()->getEmail();
         $password = $event->getUser()->getPassword();
-        $name = $event->getUser()->getName();
+        $name = $event->getUser()->getFirstname();
 
         $body = $this->renderTemplate($name, $email);
 

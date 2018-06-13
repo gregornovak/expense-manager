@@ -20,7 +20,7 @@ class MailChangePasswordListener
     public function onMailChangePasswordEvent(EmailChangePasswordEvent $event): void
     {
         $user = $event->getUser();
-        $name = $event->getUser()->getName();
+        $name = $event->getUser()->getFirstame();
         $email = $event->getUser()->getEmail();
         $password = $event->getUser()->getPassword();
 

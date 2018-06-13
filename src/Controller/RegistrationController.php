@@ -18,6 +18,8 @@ class RegistrationController extends FOSRestController
     /**
      * @Route(path="/api/register", name="registration")
      * @Method("POST")
+     * @param Request $request
+     * @return JsonResponse
      */
     public function postRegisterAction(Request $request): JsonResponse
     {

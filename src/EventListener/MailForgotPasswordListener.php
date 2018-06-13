@@ -20,7 +20,7 @@ class MailForgotPasswordListener
     public function onMailForgotPasswordEvent(EmailForgotPasswordEvent $event): void
     {
         $user = $event->getUser();
-        $name = $event->getUser()->getName();
+        $name = $event->getUser()->getFirstname();
         $email = $event->getUser()->getEmail();
         $password = $event->getUser()->getPassword();
 
