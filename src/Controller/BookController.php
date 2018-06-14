@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use JMS\Serializer\SerializerInterface;
 use App\Entity\Book;
 use App\Form\BookType;
 
@@ -18,19 +19,21 @@ class BookController extends FOSRestController
 {
 	/**
 	 * @Route("/books", name="get_books")
-     * @return array
+     * @param SerializerInterface $serializer
+     * @return JsonResponse
      */
-    public function getBooksAction()
+    public function getBooksAction(SerializerInterface $serializer) : JsonResponse
 	{
 		$em = $this->getDoctrine()->getManager();
         $books = $em->getRepository(Book::class)->findAll();
         
         if (!$books) {
-            return new JsonResponse(['data' => []]);
-			// throw new HttpException(400, "Invalid data");
-		}
+            return new JsonResponse(['success' => true, 'data' => []], 204);
+        }
+        
+        $books = $serializer->serialize(['success' => true, 'data' => $books], 'json');
 
-		return $books;
+		return new JsonResponse($books, 200, [], true);
 	}
 
 	/**
