@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use FOS\RestBundle\Controller\FOSRestController;
+// use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -11,11 +11,13 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use JMS\Serializer\SerializerInterface;
 use App\Entity\Book;
 use App\Form\BookType;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
 
 /**
  * @Route("/api")
  */
-class BookController extends FOSRestController
+class BookController extends Controller
 {
 	/**
 	 * @Route("/books", name="get_books")

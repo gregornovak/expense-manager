@@ -12,8 +12,10 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use App\Form\ChangePasswordType;
 use App\Entity\User;
 use App\Event\EmailChangePasswordEvent;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class ChangePasswordController extends FOSRestController
+
+class ChangePasswordController extends Controller
 {
     /**
      * @Route(path="api/changePassword", name="change_password")

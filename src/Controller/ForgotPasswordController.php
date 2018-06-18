@@ -14,7 +14,8 @@ use App\Entity\User;
 use App\Utils\PasswordGenerator;
 use App\Event\EmailForgotPasswordEvent;
 
-class ForgotPasswordController extends FOSRestController
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+class ForgotPasswordController extends Controller
 {
     /**
      * @Route(path="api/forgotPassword", name="forgot_password")

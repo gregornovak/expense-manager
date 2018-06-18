@@ -2,8 +2,11 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * User
@@ -22,33 +25,61 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank() 
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank() 
      */
     private $lastname;
 
     /**
      * @ORM\Column(type="string")
-     */
-    private $username;
-
-    /**
-     * @ORM\Column(type="string")
+     * @Assert\NotBlank() 
+	 * @Assert\Email()
+	 * @Assert\NotBlank(groups={"login"})
+     * @Assert\Email(groups={"login"}) 
      */
     private $email;
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank() 
+	 * @Assert\NotBlank(groups={"login"})
      */
     private $password;
 
     /**
      * @ORM\Column(type="json")
      */
-    private $roles = [];
+	private $roles = [];
+	
+	/**
+	 * @ORM\Column(type="datetime")
+	 */
+	private $added;
+
+	/**
+	 * @ORM\Column(type="datetime")
+	 */
+	private $updated;
+
+	/**
+	 * @ORM\Column(type="datetime")
+	 */
+	private $lastLogin;
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="App\Entity\Expenses", mappedBy="user_id")
+	*/
+	private $expenses;
+
+	public function __construct()
+	{
+		$this->expenses = new ArrayCollection();
+	}
 
 	public function getId(): int
 	{
@@ -130,4 +161,66 @@ class User implements UserInterface
 	{
 
 	}
+
+	public function setAdded(\DateTime $added): void
+	{
+		$this->added = $added;
+	}
+
+	public function getAdded(): ?\DateTime
+	{
+		return $this->added;
+	}
+
+	public function setUpdated(\DateTime $updated): void
+	{
+		$this->updated = $updated;
+	}
+
+	public function getUpdated(): ?\DateTime
+	{
+		return $this->updated;
+	}
+
+	public function setLastLogin(\DateTime $lastLogin): void
+	{
+		$this->lastLogin = $lastLogin;
+	}
+
+	public function getLastLogin(): ?\DateTime
+	{
+		return $this->lastLogin;
+	}
+	
+	/**
+	 * @return Collection|Expenses[]
+	*/
+	public function getExpenses(): Collection
+	{
+		return $this->expenses;
+	}
+	
+	public function addExpense(Expenses $expense): self
+	{
+		if (!$this->expenses->contains($expense)) {
+			$this->expenses[] = $expense;
+			$expense->setUserId($this);
+		}
+		
+		return $this;
+	}
+	
+	public function removeExpense(Expenses $expense): self
+	{
+		if ($this->expenses->contains($expense)) {
+			$this->expenses->removeElement($expense);
+			// set the owning side to null (unless already changed)
+			if ($expense->getUserId() === $this) {
+				$expense->setUserId(null);
+			}
+		}
+		
+		return $this;
+	}
+		
 }
