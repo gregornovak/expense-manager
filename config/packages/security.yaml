@@ -5,7 +5,7 @@ security:
     # https://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     providers:
         database_users:
-            entity: { class: App:User , property: username }
+            entity: { class: App:User , property: email }
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -24,9 +24,10 @@ security:
             # http_basic: ~
             # https://symfony.com/doc/current/book/security.html#a-configuring-how-your-users-will-authenticate
     access_control:
-        - { path: ^/api/books, roles: ROLE_ADMIN }
-        - { path: ^/api/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/token, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/expenses, roles: ROLE_USER }
+        - { path: ^/api/expense-categories, roles: ROLE_USER }
+        - { path: ^/api/users, roles: ROLE_USER }
+        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 
 
             # form_login: ~

@@ -16,25 +16,34 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
 /**
- * @Route(path="/api")
+ * @Route("/api")
  */
 class UserController extends Controller
 {
+    private $serializer;
+
+    private $validator;
+
+    public function __construct(
+        SerializerInterface $serializer, 
+        ValidatorInterface $validator
+    )
+    {
+        $this->serializer = $serializer;
+        $this->validator = $validator;
+    }
+
     /**
-     * @Route(path="/users/registration", name="user_registration")
+     * @Route("/users", name="add_user")
      * @Method("POST")
      * @param Request $request
      * @return JsonResponse
      * @throws HttpException
      */
-    public function saveAction(
-        Request $request, 
-        SerializerInterface $serializer, 
-        ValidatorInterface $validator
-    ): JsonResponse
+    public function addAction(Request $request): JsonResponse
     {
-        $user = $serializer->deserialize($request->getContent(), User::class, 'json');
-        $errors = $validator->validate($user);
+        $user = $this->serializer->deserialize($request->getContent(), User::class, 'json');
+        $errors = $this->validator->validate($user);
 
         if(count($errors) > 0) {
             throw new HttpException(400, "Invalid data");
@@ -48,7 +57,7 @@ class UserController extends Controller
         $user->setLastname($user->getLastname());
         $user->setEmail($user->getEmail());
         $user->setPassword($password);
-        $user->setRoles(['ROLE_ADMIN']);
+        $user->setRoles(['ROLE_USER']);
         $user->setAdded($now);
         $user->setUpdated($now);
         $user->setLastLogin($now);
@@ -66,23 +75,58 @@ class UserController extends Controller
             throw new HttpException(400, "Error saving data to database.");
         }
         
-        $user = $serializer->serialize(['success' => true, 'code' => 1, 'data' => $user], 'json');
+        $user = $this->serializer->serialize(['success' => true, 'code' => 1, 'data' => $user], 'json');
 
         return new JsonResponse($user, 201, [], true);
     }
 
+    /**
+     * @Route(path="/users", name="get_user_collection")
+     * @Method("GET")
+     */
+    public function getCollectionAction()
+    {
+        return new JsonResponse(['Franci Petek', 'Romelu Lukaku', 'Sergio Ramos']);
+    }
+
+    /**
+     * @Route(path="/users/{id}", name="get_user")
+     * @Method("GET")
+     */
+    public function getAction(string $id)
+    {
+        return new JsonResponse([$id => 'Franci petek']);
+    }   
+
+    /**
+     * @Route(path="/users/{id}", name="edit_user")
+     * @Method("PUT")
+     */
+    public function editAction(string $id)
+    {
+        return new JsonResponse(['id' => $id]);
+    }
+
+    /**
+     * @Route(path="/users/{id}", name="delete_user")
+     * @Method("DELETE")
+     */
+    public function deleteAction(string $id)
+    {
+        return new JsonResponse(['id' => $id]);
+    }
+
      /**
-     * @Route("/users/authentication", name="login_authentication")
+     * @Route("/login", name="user_authentication")
      * @Method("POST")
      */
     public function loginAction(
         Request $request,
-        SerializerInterface $serializer,
         ValidatorInterface $validator
     ): JsonResponse
     {
-        $data = $serializer->deserialize($request->getContent(), User::class, 'json');
-        $errors = $validator->validate($data, null, ['login']);
+        $data = $this->serializer->deserialize($request->getContent(), User::class, 'json');
+        $errors = $this->validator->validate($data, null, ['login']);
         
         if(count($errors) > 0) {
             throw new HttpException(400, "Email and Password are required fields");

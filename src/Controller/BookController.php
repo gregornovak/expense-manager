@@ -13,7 +13,6 @@ use App\Entity\Book;
 use App\Form\BookType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-
 /**
  * @Route("/api")
  */

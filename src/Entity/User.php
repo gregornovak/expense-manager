@@ -76,6 +76,11 @@ class User implements UserInterface
 	*/
 	private $expenses;
 
+	/**
+	 * Not used but must be declared because of the jwt library
+	 */
+	private $username;
+
 	public function __construct()
 	{
 		$this->expenses = new ArrayCollection();
@@ -106,11 +111,16 @@ class User implements UserInterface
 		return $this->lastname;
 	}
 
+	/**
+	 * Not used but must be declared because of the jwt library
+	 */
 	public function setUsername(string $username): void
 	{
 		$this->username = $username;
 	}
-
+	/**
+	 * Not used but must be declared because of the jwt library
+	 */
 	public function getUsername(): ?string
 	{
 		return $this->username;
