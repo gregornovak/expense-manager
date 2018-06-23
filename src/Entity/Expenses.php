@@ -3,6 +3,11 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\MaxDepth;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ExpensesRepository")
@@ -18,6 +23,7 @@ class Expenses
 
     /**
      * @ORM\Column(type="string", length=80)
+     * @Assert\NotBlank()
      */
     private $name;
 
@@ -33,11 +39,14 @@ class Expenses
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotBlank()
+     * Provide this value in cents
      */
     private $amount;
 
     /**
      * @ORM\Column(type="string", length=50)
+     * @Assert\NotBlank()
      */
     private $currency;
 
@@ -64,12 +73,16 @@ class Expenses
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="expenses")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"additional"})
+     * @MaxDepth(1)
      */
     private $user;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\ExpensesCategories", inversedBy="expenses")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"additional"})
+     * @MaxDepth(1)
      */
     private $expenses_category;
 

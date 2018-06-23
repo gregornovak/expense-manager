@@ -10,7 +10,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\Translation\Exception\NotFoundResourceException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -64,7 +63,7 @@ class ExpenseCategoryController extends Controller
      * @Method("GET")
      * @param string $id
      * @return JsonResponse
-     * @throws NotFoundResourceException
+     * @throws HttpException
      */
     public function get(string $id): JsonResponse
     {

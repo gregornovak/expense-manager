@@ -19,6 +19,20 @@ class ExpensesRepository extends ServiceEntityRepository
         parent::__construct($registry, Expenses::class);
     }
 
+    public function getAll(int $user, int $page = 1, int $limit = 10)
+    {
+        $offset = ($page - 1) * $limit;
+        return $this->createQueryBuilder('e')
+            ->select()
+            ->where('e.user = :user')
+            ->setParameter(':user', $user)
+            ->orderBy('e.id', 'ASC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
 //    /**
 //     * @return Expenses[] Returns an array of Expenses objects
 //     */
