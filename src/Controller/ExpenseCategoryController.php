@@ -2,17 +2,16 @@
 
 namespace App\Controller;
 
-use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\ExpensesCategories;
+use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Translation\Exception\NotFoundResourceException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use JMS\Serializer\SerializerInterface;
-use App\Entity\ExpensesCategories;
 
 /**
  * @Route("/api")
@@ -35,20 +34,29 @@ class ExpenseCategoryController extends Controller
 	/**
 	 * @Route("/expense-categories", name="get_expense_categories_collection")
      * @Method("GET")
+     * @param Request $request
      * @return JsonResponse
      */
-    public function getCollectionAction() : JsonResponse
+    public function index(Request $request): JsonResponse
 	{
-		// $em = $this->getDoctrine()->getManager();
-        // $books = $em->getRepository(Book::class)->findAll();
-        
-        // if (!$books) {
-        //     return new JsonResponse(['success' => true, 'data' => []], 204);
-        // }
-        
-        // $books = $this->serializer->serialize(['success' => true, 'data' => $books], 'json');
+        $page = $request->query->get('page');
+        $limit = $request->query->get('limit');
 
-		return new JsonResponse(['ena', 'dva', 'tri']);
+        $repository = $this->getDoctrine()->getRepository(ExpensesCategories::class);
+
+        if(!$page || !is_numeric($page) || !$limit || !is_numeric($limit)) {
+            $results = $repository->getAll();
+        } else {
+            $results = $repository->getAll((int)$page, (int)$limit);
+        }
+
+        if (!$results) {
+            return new JsonResponse(['success' => true, 'data' => []]);
+        }
+        
+        $categories = $this->serializer->serialize(['success' => true, 'data' => $results], 'json');
+
+        return new JsonResponse($categories, 200, [], true);
 	}
 
 	/**
@@ -56,21 +64,20 @@ class ExpenseCategoryController extends Controller
      * @Method("GET")
      * @param string $id
      * @return JsonResponse
+     * @throws NotFoundResourceException
      */
-    public function getAction(string $id): JsonResponse
+    public function get(string $id): JsonResponse
     {
-        // if (!$id) {
-        //     throw new HttpException(400, "Invalid id");
-        // }
+        $em = $this->getDoctrine()->getManager();
+        $result = $em->getRepository(ExpensesCategories::class)->find($id);
 
-		// $em = $this->getDoctrine()->getManager();
-		// $book = $em->getRepository(Book::class)->find($id);
+        if(!$result) {
+            throw new HttpException(404,'Resource does not exist.');
+        }
 
-        // if (!$book) {
-		// 	throw new HttpException(400, "Invalid data");
-		// }
+        $category = $this->serializer->serialize(['success' => true, 'data' => $result], 'json');
 
-		return new JsonResponse([$id => 'expense-category']);
+		return new JsonResponse($category, 200, [], true);
 	}
 
 	/**
@@ -80,7 +87,7 @@ class ExpenseCategoryController extends Controller
      * @return JsonResponse
      * @throws HttpException
      */
-    public function postAction(Request $request): JsonResponse
+    public function save(Request $request): JsonResponse
     {
         $data = $this->serializer
             ->deserialize(
@@ -92,7 +99,7 @@ class ExpenseCategoryController extends Controller
         $errors = $this->validator->validate($data);
 
         if(count($errors) > 0) {
-            throw new HttpException(400, "You must provide category property");
+            throw new HttpException(400, 'You must provide category property');
         }
 
         $now = new \DateTime('now', new \DateTimeZone('Europe/Ljubljana'));
@@ -104,12 +111,7 @@ class ExpenseCategoryController extends Controller
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($expenseCategory);
-
-        try {
-            $em->flush();
-        } catch(\Doctrine\ORM\ORMException $e) {
-            throw new HttpException(400, "Error saving data to database.");
-        }
+        $em->flush();
 
         $response = $this->serializer->serialize(['data' => $expenseCategory], 'json');
 
@@ -117,45 +119,70 @@ class ExpenseCategoryController extends Controller
     }
 
 	/**
-	 * @Route("/books/edit/{id}", name="put_book")
+	 * @Route("/expense-categories/{id}", name="update_expense_category")
      * @param Request $request
      * @param string $id
      * @return JsonResponse
+     * @throws HttpException
 	 */
-    public function putBookAction(Request $request, string $id): JsonResponse
+    public function update(Request $request, string $id): JsonResponse
     {
-        // $em = $this->getDoctrine()->getManager();
-        // $book = $em->getRepository(Book::class)->find($id);
-        // $form = $this->createForm(BookType::class, $book, ['method' => 'PUT']);
-        // $form->handleRequest($request);
+        $data = $this->serializer
+            ->deserialize(
+                $request->getContent(),
+                ExpensesCategories::class,
+                'json'
+            );
 
-        // if ($form->isValid()) {
-        //     $em->persist($book);
-        //     $em->flush();
+        $errors = $this->validator->validate($data);
 
-        //     return $book;
-        // }
+        if(count($errors) > 0) {
+            throw new HttpException(400, 'You must provide category property');
+        }
 
-        // throw new HttpException(400, "Invalid data");
+        $em = $this->getDoctrine()->getManager();
+
+        $category = $em->getRepository(ExpensesCategories::class)
+            ->find($id);
+
+        if(!$category) {
+            throw new HttpException(404, 'Resource not found.');
+        }
+
+        $category->setCategory($data->getCategory());
+        $category->setUpdated(
+            new \DateTime('now',
+            new \DateTimeZone('Europe/Ljubljana'))
+        );
+
+        $em->flush();
+
+        $category = $this->serializer->serialize(['success' => true, 'data' => $category], 'json');
+
+        return new JsonResponse($category, 200, [], true);
     }
 
 	/**
-	 * @Route("/books/remove/{id}", name="delete_book")
+	 * @Route("/expense-categories/{id}", name="delete_expense_category")
+     * @Method("DELETE")
      * @param string $id
      * @return JsonResponse
+     * @throws HttpException
 	 */
-    public function deleteBookAction(string $id): JsonResponse
+    public function delete(string $id): JsonResponse
     {
         $em = $this->getDoctrine()->getManager();
-        $book = $em->getRepository(Book::class)->find($id);
-        $em->remove($book);
-        $em->flush();
+        $category = $em->getRepository(ExpensesCategories::class)
+            ->find($id);
 
-        if (!$id) {
-            throw new HttpException(400, "Invalid id");
+        if(!$category) {
+            throw new HttpException(404, 'Resource not found.');
         }
 
-        return $book;
+        $em->remove($category);
+        $em->flush();
+
+        return new JsonResponse(['success' => true]);
     }
 }
 

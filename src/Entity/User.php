@@ -72,7 +72,7 @@ class User implements UserInterface
 	private $lastLogin;
 	
 	/**
-	 * @ORM\OneToMany(targetEntity="App\Entity\Expenses", mappedBy="user_id")
+	 * @ORM\OneToMany(targetEntity="App\Entity\Expenses", mappedBy="user")
 	*/
 	private $expenses;
 
@@ -214,7 +214,7 @@ class User implements UserInterface
 	{
 		if (!$this->expenses->contains($expense)) {
 			$this->expenses[] = $expense;
-			$expense->setUserId($this);
+			$expense->setUser($this);
 		}
 		
 		return $this;
@@ -225,8 +225,8 @@ class User implements UserInterface
 		if ($this->expenses->contains($expense)) {
 			$this->expenses->removeElement($expense);
 			// set the owning side to null (unless already changed)
-			if ($expense->getUserId() === $this) {
-				$expense->setUserId(null);
+			if ($expense->getUser() === $this) {
+				$expense->setUser(null);
 			}
 		}
 		

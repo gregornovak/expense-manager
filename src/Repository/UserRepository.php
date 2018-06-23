@@ -16,10 +16,22 @@ class UserRepository extends ServiceEntityRepository
     public function findByUsernameOrEmail(string $username): string
     {
         return $this->createQueryBuilder('u')
-             ->where('u.username = :username OR u.email = :email')
-             ->setParameter('username', $username)
+             ->where('u.email = :email')
              ->setParameter('email', $username)
              ->getQuery()
              ->getOneOrNullResult();
+    }
+
+
+    public function getAll(int $page = 1, int $limit = 10)
+    {
+        $offset = ($page - 1) * $limit;
+        return $this->createQueryBuilder('u')
+            ->select()
+            ->orderBy('u.id', 'ASC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
     }
 }

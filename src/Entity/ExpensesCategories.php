@@ -38,7 +38,7 @@ class ExpensesCategories
     private $updated;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Expenses", mappedBy="expenses_category_id")
+     * @ORM\OneToMany(targetEntity="App\Entity\Expenses", mappedBy="expenses_category")
      */
     private $expenses;
 
@@ -100,7 +100,7 @@ class ExpensesCategories
     {
         if (!$this->expenses->contains($expense)) {
             $this->expenses[] = $expense;
-            $expense->setExpensesCategoryId($this);
+            $expense->setExpensesCategory($this);
         }
 
         return $this;
@@ -111,8 +111,8 @@ class ExpensesCategories
         if ($this->expenses->contains($expense)) {
             $this->expenses->removeElement($expense);
             // set the owning side to null (unless already changed)
-            if ($expense->getExpensesCategoryId() === $this) {
-                $expense->setExpensesCategoryId(null);
+            if ($expense->getExpensesCategory() === $this) {
+                $expense->setExpensesCategory(null);
             }
         }
 

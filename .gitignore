@@ -34,3 +34,4 @@ docker-composer.yml.dist
 /.php_cs.cache
 ###< friendsofphp/php-cs-fixer ###
 src/Migrations/*
+.idea/*

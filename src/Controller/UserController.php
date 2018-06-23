@@ -2,16 +2,16 @@
 
 namespace App\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use App\Event\EmailRegistrationUserEvent;
+use App\Entity\User;
+use JMS\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use App\Entity\User;
-use App\Event\EmailRegistrationUserEvent;
-use JMS\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
@@ -63,18 +63,15 @@ class UserController extends Controller
         $user->setLastLogin($now);
         $em = $this->getDoctrine()->getManager();
         $em->persist($user);
+        $em->flush();
 
         // $event = new EmailRegistrationUserEvent($user);
         // $dispatcher = $this->get('event_dispatcher');
         // $dispatcher->dispatch(EmailRegistrationUserEvent::NAME, $event);
 
-
-        try {
-            $em->flush();
-        } catch(\Doctrine\ORM\ORMException $e) {
+        if(!$user->getId()) {
             throw new HttpException(400, "Error saving data to database.");
         }
-        
         $user = $this->serializer->serialize(['success' => true, 'code' => 1, 'data' => $user], 'json');
 
         return new JsonResponse($user, 201, [], true);
@@ -84,8 +81,10 @@ class UserController extends Controller
      * @Route(path="/users", name="get_user_collection")
      * @Method("GET")
      */
-    public function getCollectionAction()
+    public function index()
     {
+        $repository = $this->getDoctrine()->getRepository(User::class);
+        dump($repository->getAll()); die;
         return new JsonResponse(['Franci Petek', 'Romelu Lukaku', 'Sergio Ramos']);
     }
 
