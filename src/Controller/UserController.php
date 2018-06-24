@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
@@ -118,11 +119,13 @@ class UserController extends Controller
      /**
      * @Route("/login", name="user_authentication")
      * @Method("POST")
+     * @param Request $request
+     * @return JsonResponse
+     * @throws \HttpException
+     * @throws NotFoundHttpException
+     * @throws BadCredentialsException
      */
-    public function loginAction(
-        Request $request,
-        ValidatorInterface $validator
-    ): JsonResponse
+    public function loginAction(Request $request): JsonResponse
     {
         $data = $this->serializer->deserialize($request->getContent(), User::class, 'json');
         $errors = $this->validator->validate($data, null, ['login']);

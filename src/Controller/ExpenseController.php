@@ -92,7 +92,7 @@ class ExpenseController extends Controller
      * @return JsonResponse
      * @throws HttpException
      */
-    public function getExpense(Request $request, string $id)
+    public function getExpense(Request $request, string $id): JsonResponse
     {
         $authenticatedUser = $this->authenticator->getUser(
             $this->authenticator->getCredentials($request),
@@ -100,60 +100,58 @@ class ExpenseController extends Controller
         );
 
         $em = $this->getDoctrine()->getManager();
-        $result = $em->getRepository(Expenses::class)->find($id);
+        $expense = $em->getRepository(Expenses::class)->find($id);
 
-        if(!$result) {
+        if(!$expense) {
             throw new HttpException(404,'Resource does not exist.');
         }
 
-        if($authenticatedUser->getId() != $result->getUser()->getId()) {
+        if($authenticatedUser->getId() != $expense->getUser()->getId()) {
             throw new HttpException(400,'You do not have permission to view this resource.');
         }
 
-        $expense = $this->serializer->serialize(['success' => true, 'data' => $result],
+        $response = $this->serializer->serialize(['success' => true, 'data' => $expense],
             'json',
             SerializationContext::create()
                 ->setGroups(['Default', 'additional'])
                 ->enableMaxDepthChecks()
         );
 
-        return new JsonResponse($expense, 200, [], true);
+        return new JsonResponse($response, 200, [], true);
     }
 
     /**
      * @Route("/expenses", name="post_expenses")
      * @Method("POST")
      * @param Request $request
-     * @param UserProviderInterface $userProvider
      * @return JsonResponse
      * @throws HttpException
      */
-    public function save(Request $request, UserProviderInterface $userProvider): JsonResponse
+    public function save(Request $request): JsonResponse
     {
         $authenticatedUser = $this->authenticator->getUser(
             $this->authenticator->getCredentials($request),
-            $userProvider
+            $this->userProvider
         );
 
         $related = json_decode($request->getContent());
 
-        if((!isset($related->user) && empty($related->user)) ||
-            (!isset($related->expenses_category) || empty($related->expenses_category))
+        if(!isset($related->expenses_category) || empty($related->expenses_category)
         )
         {
             throw new HttpException(400, 'You must provide user and expenses_category id');
         }
 
         $em = $this->getDoctrine()->getManager();
-        $user = $em->getRepository(User::class)->find($related->user);
+        $user = $em->getRepository(User::class)->find($authenticatedUser->getId());
 
         if(!$user) {
             throw new HttpException(404, 'This user does not exist!');
         }
 
-        if($user->getId() != $authenticatedUser->getId()) {
-            throw new HttpException(400, 'You do not have permission to save expense as somebody else!');
-        }
+//        if($user->getId() != $authenticatedUser->getId()) {
+//            throw new HttpException(400, 'You do not have permission to save expense as somebody else!');
+//        }
 
         $category = $em->getRepository(ExpensesCategories::class)
             ->find($related->expenses_category);
@@ -206,7 +204,6 @@ class ExpenseController extends Controller
         $em->persist($expense);
         $em->flush();
 
-
         $response = $this->serializer->serialize(
             ['data' => $expense],
             'json',
@@ -219,71 +216,132 @@ class ExpenseController extends Controller
     }
 
     /**
-     * @Route("/expense-categories/{id}", name="update_expense_category")
+     * @Route("/expenses/{id}", name="update_expense")
+     * @Method("PUT")
      * @param Request $request
      * @param string $id
      * @return JsonResponse
      * @throws HttpException
      */
-//    public function update(Request $request, string $id): JsonResponse
-//    {
-//        $data = $this->serializer
-//            ->deserialize(
-//                $request->getContent(),
-//                ExpensesCategories::class,
-//                'json'
-//            );
-//
-//        $errors = $this->validator->validate($data);
-//
-//        if(count($errors) > 0) {
-//            throw new HttpException(400, 'You must provide category property');
-//        }
-//
-//        $em = $this->getDoctrine()->getManager();
-//
-//        $category = $em->getRepository(ExpensesCategories::class)
-//            ->find($id);
-//
-//        if(!$category) {
-//            throw new HttpException(404, 'Resource not found.');
-//        }
-//
-//        $category->setCategory($data->getCategory());
-//        $category->setUpdated(
-//            new \DateTime('now',
-//                new \DateTimeZone('Europe/Ljubljana'))
-//        );
-//
-//        $em->flush();
-//
-//        $category = $this->serializer->serialize(['success' => true, 'data' => $category], 'json');
-//
-//        return new JsonResponse($category, 200, [], true);
-//    }
+    public function update(Request $request, string $id): JsonResponse
+    {
+        $authenticatedUser = $this->authenticator->getUser(
+            $this->authenticator->getCredentials($request),
+            $this->userProvider
+        );
+
+        $related = json_decode($request->getContent());
+
+        $em = $this->getDoctrine()->getManager();
+        $user = $em->getRepository(User::class)->find($authenticatedUser->getId());
+
+        if(!$user) {
+            throw new HttpException(404, 'This user does not exist!');
+        }
+
+        if(isset($related->expenses_category) && !empty($related->expenses_category)) {
+            $category = $em->getRepository(ExpensesCategories::class)
+                ->find($related->expenses_category);
+
+            if(!$category) {
+                throw new HttpException(404, 'This expenses category does not exist!');
+            }
+        }
+
+        $data = $this->serializer
+            ->deserialize(
+                $request->getContent(),
+                Expenses::class,
+                'json',
+                DeserializationContext::create()->setGroups(['Default'])
+            );
+
+        $errors = $this->validator->validate($data);
+
+        if(count($errors) > 0) {
+            throw new HttpException(400, 'You must provide all required properties.');
+        }
+
+        $expense = $em->getRepository(Expenses::class)->find($id);
+
+        if(!$expense) {
+            throw new HttpException(404, 'No resource found.');
+        }
+
+        if(isset($category)) {
+            $expense->setExpensesCategory($category);
+        }
+        $expense->setName($data->getName());
+        $expense->setUpdated(new \DateTime('now', new \DateTimeZone('Europe/Ljubljana')));
+        $expense->setAmount($data->getAmount());
+        $expense->setCurrency($data->getCurrency());
+
+        if($data->getCash() && gettype($data->getCash()) === "boolean") {
+            $expense->setCash($data->getCash());
+        }
+
+        if($data->getPayee()) {
+            $expense->setPayee($data->getPayee());
+        }
+
+        if($data->getStatus()) {
+            $expense->setStatus($data->getStatus());
+        }
+
+        if($data->getDescription()) {
+            $expense->setDescription($data->getDescription());
+        }
+
+        $em->flush();
+
+        $response = $this->serializer->serialize(
+            ['data' => $expense],
+            'json',
+            SerializationContext::create()
+                ->setGroups(['Default', 'additional'])
+                ->enableMaxDepthChecks()
+        );
+
+        return new JsonResponse($response, 200, [], true);
+    }
 
     /**
-     * @Route("/expense-categories/{id}", name="delete_expense_category")
+     * @Route("/expenses/{id}", name="delete_expense")
      * @Method("DELETE")
+     * @param Request $request
      * @param string $id
      * @return JsonResponse
      * @throws HttpException
      */
-//    public function delete(string $id): JsonResponse
-//    {
-//        $em = $this->getDoctrine()->getManager();
-//        $category = $em->getRepository(ExpensesCategories::class)
-//            ->find($id);
-//
-//        if(!$category) {
-//            throw new HttpException(404, 'Resource not found.');
-//        }
-//
-//        $em->remove($category);
-//        $em->flush();
-//
-//        return new JsonResponse(['success' => true]);
-//    }
+    public function delete(Request $request, string $id): JsonResponse
+    {
+        $authenticatedUser = $this->authenticator->getUser(
+            $this->authenticator->getCredentials($request),
+            $this->userProvider
+        );
+
+        $em = $this->getDoctrine()->getManager();
+        $user = $em->getRepository(User::class)->find($authenticatedUser->getId());
+
+        if(!$user) {
+            throw new HttpException(404, 'This user does not exist!');
+        }
+
+        $expense = $em->getRepository(Expenses::class)->find($id);
+
+        if(!$expense) {
+            throw new HttpException(404, 'Resource not found.');
+        }
+
+        if($expense->getUser()->getId() != $authenticatedUser->getId()) {
+            throw new HttpException(400, 'You do not have permission to delete expense as somebody else!');
+        }
+
+        $em->remove($expense);
+        $em->flush();
+
+        return new JsonResponse(['success' => true]);
+    }
 }
 
 
