@@ -65,7 +65,7 @@ class ExpenseCategoryController extends Controller
      * @return JsonResponse
      * @throws HttpException
      */
-    public function get(string $id): JsonResponse
+    public function getCategory(string $id): JsonResponse
     {
         $em = $this->getDoctrine()->getManager();
         $result = $em->getRepository(ExpensesCategories::class)->find($id);

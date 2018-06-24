@@ -5,6 +5,8 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
+use JMS\Serializer\Annotation\Exclude;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -48,11 +50,13 @@ class User implements UserInterface
      * @ORM\Column(type="string")
      * @Assert\NotBlank() 
 	 * @Assert\NotBlank(groups={"login"})
+     * @Exclude()
      */
     private $password;
 
     /**
      * @ORM\Column(type="json")
+     * @Exclude()
      */
 	private $roles = [];
 	

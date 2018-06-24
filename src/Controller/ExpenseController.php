@@ -29,32 +29,35 @@ class ExpenseController extends Controller
 
     private $authenticator;
 
+    private $userProvider;
+
     public function __construct(
         SerializerInterface $serializer,
         ValidatorInterface $validator,
-        JwtAuthenticator $authenticator
+        JwtAuthenticator $authenticator,
+        UserProviderInterface $userProvider
     )
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->authenticator = $authenticator;
+        $this->userProvider = $userProvider;
     }
 
     /**
      * @Route("/expenses", name="get_expenses_collection")
      * @Method("GET")
      * @param Request $request
-     * @param UserProviderInterface $userProvider
      * @return JsonResponse
      */
-    public function index(Request $request, UserProviderInterface $userProvider): JsonResponse
+    public function index(Request $request): JsonResponse
     {
+        // Check for user and load only his expenses
         $user = $this->authenticator->getUser(
             $this->authenticator->getCredentials($request),
-            $userProvider
+            $this->userProvider
         );
 
-        // check for user and load only his expenses
         $page = $request->query->get('page');
         $limit = $request->query->get('limit');
 
@@ -82,30 +85,46 @@ class ExpenseController extends Controller
     }
 
     /**
-     * @Route("/expense-categories/{id}", name="get_expense_category")
+     * @Route("/expenses/{id}", name="get_expense")
      * @Method("GET")
+     * @param Request $request
      * @param string $id
      * @return JsonResponse
      * @throws HttpException
      */
-//    public function get(string $id): JsonResponse
-//    {
-//        $em = $this->getDoctrine()->getManager();
-//        $result = $em->getRepository(ExpensesCategories::class)->find($id);
-//
-//        if(!$result) {
-//            throw new HttpException(404,'Resource does not exist.');
-//        }
-//
-//        $category = $this->serializer->serialize(['success' => true, 'data' => $result], 'json');
-//
-//        return new JsonResponse($category, 200, [], true);
-//    }
+    public function getExpense(Request $request, string $id)
+    {
+        $authenticatedUser = $this->authenticator->getUser(
+            $this->authenticator->getCredentials($request),
+            $this->userProvider
+        );
+
+        $em = $this->getDoctrine()->getManager();
+        $result = $em->getRepository(Expenses::class)->find($id);
+
+        if(!$result) {
+            throw new HttpException(404,'Resource does not exist.');
+        }
+
+        if($authenticatedUser->getId() != $result->getUser()->getId()) {
+            throw new HttpException(400,'You do not have permission to view this resource.');
+        }
+
+        $expense = $this->serializer->serialize(['success' => true, 'data' => $result],
+            'json',
+            SerializationContext::create()
+                ->setGroups(['Default', 'additional'])
+                ->enableMaxDepthChecks()
+        );
+
+        return new JsonResponse($expense, 200, [], true);
+    }
 
     /**
      * @Route("/expenses", name="post_expenses")
      * @Method("POST")
      * @param Request $request
+     * @param UserProviderInterface $userProvider
      * @return JsonResponse
      * @throws HttpException
      */
