@@ -268,6 +268,10 @@ class ExpenseController extends Controller
             throw new HttpException(404, 'No resource found.');
         }
 
+        if($expense->getUser()->getId() != $authenticatedUser->getId()) {
+            throw new HttpException(400,'You do not have permission to update this resource.');
+        }
+
         if(isset($category)) {
             $expense->setExpensesCategory($category);
         }
