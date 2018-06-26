@@ -19,14 +19,29 @@ class ExpensesCategoriesRepository extends ServiceEntityRepository
         parent::__construct($registry, ExpensesCategories::class);
     }
 
-    public function getAll(int $page = 1, int $limit = 10)
+    public function getAll(int $user, int $page = 1, int $limit = 10)
     {
         $offset = ($page - 1) * $limit;
         return $this->createQueryBuilder('e')
             ->select()
+            ->where('e.user = :user')
+            ->setParameter(':user', $user)
             ->orderBy('e.id', 'ASC')
             ->setFirstResult($offset)
             ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findCategoryByUser(int $user, int $category)
+    {
+        return $this->createQueryBuilder('e')
+            ->select()
+            ->where('e.id = :category')
+            ->andWhere('e.user = :user')
+            ->setParameter(':category', $category)
+            ->setParameter(':user', $user)
+            ->orderBy('e.id', 'ASC')
             ->getQuery()
             ->getResult();
     }

@@ -4,6 +4,9 @@ namespace App\Controller;
 
 use App\Event\EmailRegistrationUserEvent;
 use App\Entity\User;
+use App\Security\UserRole;
+use JMS\Serializer\DeserializationContext;
+use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -32,50 +35,6 @@ class UserController extends Controller
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
-    }
-
-    /**
-     * @Route("/users", name="add_user")
-     * @Method("POST")
-     * @param Request $request
-     * @return JsonResponse
-     * @throws HttpException
-     */
-    public function addAction(Request $request): JsonResponse
-    {
-        $user = $this->serializer->deserialize($request->getContent(), User::class, 'json');
-        $errors = $this->validator->validate($user);
-
-        if(count($errors) > 0) {
-            throw new HttpException(400, "Invalid data");
-        }
-
-        $now = new \DateTime('now', new \DateTimeZone('Europe/Ljubljana'));
-        $password = $this->get('security.password_encoder')
-                    ->encodePassword($user, $user->getPassword());
-
-        $user->setFirstname($user->getFirstname());
-        $user->setLastname($user->getLastname());
-        $user->setEmail($user->getEmail());
-        $user->setPassword($password);
-        $user->setRoles(['ROLE_USER']);
-        $user->setAdded($now);
-        $user->setUpdated($now);
-        $user->setLastLogin($now);
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($user);
-        $em->flush();
-
-        // $event = new EmailRegistrationUserEvent($user);
-        // $dispatcher = $this->get('event_dispatcher');
-        // $dispatcher->dispatch(EmailRegistrationUserEvent::NAME, $event);
-
-        if(!$user->getId()) {
-            throw new HttpException(400, "Error saving data to database.");
-        }
-        $user = $this->serializer->serialize(['success' => true, 'code' => 1, 'data' => $user], 'json');
-
-        return new JsonResponse($user, 201, [], true);
     }
 
     /**
@@ -116,6 +75,64 @@ class UserController extends Controller
         return new JsonResponse(['id' => $id]);
     }
 
+    /**
+     * @Route("/register", name="register_user")
+     * @Method("POST")
+     * @param Request $request
+     * @return JsonResponse
+     * @throws HttpException
+     */
+    public function registerUser(Request $request): JsonResponse
+    {
+        $user = $this->serializer->deserialize(
+            $request->getContent(),
+            User::class,
+            'json',
+            DeserializationContext::create()
+                ->setGroups(['Default', 'additional'])
+        );
+
+        $errors = $this->validator->validate($user);
+
+        if(count($errors) > 0) {
+            throw new HttpException(400, "Invalid data");
+        }
+
+        $now = new \DateTime('now', new \DateTimeZone('Europe/Ljubljana'));
+        $password = $this->get('security.password_encoder')
+            ->encodePassword($user, $user->getPassword());
+
+        $user->setFirstname($user->getFirstname());
+        $user->setLastname($user->getLastname());
+        $user->setEmail($user->getEmail());
+        $user->setPassword($password);
+        $user->setRoles([UserRole::USER]);
+        $user->setAdded($now);
+        $user->setUpdated($now);
+        $user->setLastLogin($now);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($user);
+        $em->flush();
+
+        // $event = new EmailRegistrationUserEvent($user);
+        // $dispatcher = $this->get('event_dispatcher');
+        // $dispatcher->dispatch(EmailRegistrationUserEvent::NAME, $event);
+
+        if(!$user->getId()) {
+            throw new HttpException(400, "Error saving data to database.");
+        }
+
+        $response = $this->serializer->serialize(
+            ['data' => $user],
+            'json',
+            SerializationContext::create()
+                ->setGroups(['Default'])
+                ->enableMaxDepthChecks()
+        );
+
+        return new JsonResponse($response, 201, [], true);
+    }
+
      /**
      * @Route("/login", name="user_authentication")
      * @Method("POST")
@@ -125,7 +142,7 @@ class UserController extends Controller
      * @throws NotFoundHttpException
      * @throws BadCredentialsException
      */
-    public function loginAction(Request $request): JsonResponse
+    public function loginUser(Request $request): JsonResponse
     {
         $data = $this->serializer->deserialize($request->getContent(), User::class, 'json');
         $errors = $this->validator->validate($data, null, ['login']);
@@ -154,6 +171,6 @@ class UserController extends Controller
                 'exp' => time() + 3600 // 1 hour expiration
         ]);
 
-        return new JsonResponse(['success' => true, 'code' => 1, 'token' => $token]);
+        return new JsonResponse(['token' => $token]);
     }
 }

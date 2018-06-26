@@ -52,7 +52,6 @@ class ExpenseController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        // Check for user and load only his expenses
         $user = $this->authenticator->getUser(
             $this->authenticator->getCredentials($request),
             $this->userProvider
@@ -70,7 +69,7 @@ class ExpenseController extends Controller
         }
 
         if (!$results) {
-            return new JsonResponse(['success' => true, 'data' => []]);
+            return new JsonResponse(['data' => []]);
         }
 
         $expenses = $this->serializer->serialize(
@@ -139,7 +138,7 @@ class ExpenseController extends Controller
         if(!isset($related->expenses_category) || empty($related->expenses_category)
         )
         {
-            throw new HttpException(400, 'You must provide user and expenses_category id');
+            throw new HttpException(400, 'You must expenses_category id');
         }
 
         $em = $this->getDoctrine()->getManager();
@@ -149,12 +148,8 @@ class ExpenseController extends Controller
             throw new HttpException(404, 'This user does not exist!');
         }
 
-//        if($user->getId() != $authenticatedUser->getId()) {
-//            throw new HttpException(400, 'You do not have permission to save expense as somebody else!');
-//        }
-
         $category = $em->getRepository(ExpensesCategories::class)
-            ->find($related->expenses_category);
+            ->findCategoryByUser($user->getId(), $related->expenses_category)[0];
 
         if(!$category) {
             throw new HttpException(404, 'This expenses category does not exist!');
@@ -185,7 +180,7 @@ class ExpenseController extends Controller
         $expense->setAmount($data->getAmount());
         $expense->setCurrency($data->getCurrency());
 
-        if($data->getCash() && gettype($data->getCash()) === "boolean") {
+        if($data->getCash()) {
             $expense->setCash($data->getCash());
         }
 
@@ -241,7 +236,7 @@ class ExpenseController extends Controller
 
         if(isset($related->expenses_category) && !empty($related->expenses_category)) {
             $category = $em->getRepository(ExpensesCategories::class)
-                ->find($related->expenses_category);
+                ->findCategoryByUser($user->getId(), $related->expenses_category)[0];
 
             if(!$category) {
                 throw new HttpException(404, 'This expenses category does not exist!');

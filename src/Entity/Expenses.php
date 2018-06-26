@@ -73,7 +73,6 @@ class Expenses
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="expenses")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"additional"})
      * @MaxDepth(1)
      */
     private $user;

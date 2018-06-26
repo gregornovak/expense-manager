@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Security\UserRole;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -50,7 +51,7 @@ class User implements UserInterface
      * @ORM\Column(type="string")
      * @Assert\NotBlank() 
 	 * @Assert\NotBlank(groups={"login"})
-     * @Exclude()
+     * @Serializer\Groups({"hidden"})
      */
     private $password;
 
@@ -77,6 +78,8 @@ class User implements UserInterface
 	
 	/**
 	 * @ORM\OneToMany(targetEntity="App\Entity\Expenses", mappedBy="user")
+     * @Serializer\Groups({"additional"})
+     * @Serializer\MaxDepth(1)
 	*/
 	private $expenses;
 
@@ -84,10 +87,17 @@ class User implements UserInterface
 	 * Not used but must be declared because of the jwt library
 	 */
 	private $username;
+    /**
+    * @ORM\OneToMany(targetEntity="App\Entity\ExpensesCategories", mappedBy="user")
+    * @Serializer\Groups({"additional"})
+    * @Serializer\MaxDepth(1)
+    */
+    private $expensesCategories;
 
 	public function __construct()
 	{
 		$this->expenses = new ArrayCollection();
+        $this->expensesCategories = new ArrayCollection();
 	}
 
 	public function getId(): int
@@ -155,7 +165,7 @@ class User implements UserInterface
 		$roles = $this->roles;
 
 		if (empty($roles)) {
-			$roles[] = 'ROLE_USER';
+			$roles[] = UserRole::USER;
 		}
 
 		return array_unique($roles);
@@ -236,5 +246,36 @@ class User implements UserInterface
 		
 		return $this;
 	}
+
+     /**
+      * @return Collection|ExpensesCategories[]
+      */
+     public function getExpensesCategories(): Collection
+     {
+         return $this->expensesCategories;
+     }
+
+     public function addExpensesCategory(ExpensesCategories $expensesCategory): self
+     {
+         if (!$this->expensesCategories->contains($expensesCategory)) {
+             $this->expensesCategories[] = $expensesCategory;
+             $expensesCategory->setUser($this);
+         }
+
+         return $this;
+     }
+
+     public function removeExpensesCategory(ExpensesCategories $expensesCategory): self
+     {
+         if ($this->expensesCategories->contains($expensesCategory)) {
+             $this->expensesCategories->removeElement($expensesCategory);
+             // set the owning side to null (unless already changed)
+             if ($expensesCategory->getUser() === $this) {
+                 $expensesCategory->setUser(null);
+             }
+         }
+
+         return $this;
+     }
 		
 }

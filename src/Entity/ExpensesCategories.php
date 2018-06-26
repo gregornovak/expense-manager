@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -39,8 +40,15 @@ class ExpensesCategories
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Expenses", mappedBy="expenses_category")
+     * @Serializer\Groups({"additional"})
      */
     private $expenses;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="expensesCategories")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
 
     public function __construct()
     {
@@ -115,6 +123,18 @@ class ExpensesCategories
                 $expense->setExpensesCategory(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }
