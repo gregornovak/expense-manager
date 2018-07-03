@@ -73,7 +73,10 @@ class Expenses
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="expenses")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"additional"})
      * @MaxDepth(1)
+     *
+     * Is required (not asserted as NotBlank because user comes from the token)
      */
     private $user;
 
@@ -82,6 +85,8 @@ class Expenses
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"additional"})
      * @MaxDepth(1)
+     *
+     * Is required
      */
     private $expenses_category;
 

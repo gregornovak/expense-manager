@@ -76,7 +76,7 @@ class ExpenseController extends Controller
             ['data' => $results],
             'json',
             SerializationContext::create()
-                ->setGroups(['Default', 'additional'])
+                ->setGroups(['Default'])
                 ->enableMaxDepthChecks()
         );
 
@@ -112,7 +112,7 @@ class ExpenseController extends Controller
         $response = $this->serializer->serialize(['success' => true, 'data' => $expense],
             'json',
             SerializationContext::create()
-                ->setGroups(['Default', 'additional'])
+                ->setGroups(['Default'])
                 ->enableMaxDepthChecks()
         );
 
@@ -203,7 +203,7 @@ class ExpenseController extends Controller
             ['data' => $expense],
             'json',
             SerializationContext::create()
-                ->setGroups(['Default', 'additional'])
+                ->setGroups(['Default'])
                 ->enableMaxDepthChecks()
         );
 
@@ -297,7 +297,7 @@ class ExpenseController extends Controller
             ['data' => $expense],
             'json',
             SerializationContext::create()
-                ->setGroups(['Default', 'additional'])
+                ->setGroups(['Default'])
                 ->enableMaxDepthChecks()
         );
 
@@ -341,6 +341,45 @@ class ExpenseController extends Controller
 
         return new JsonResponse(['success' => true]);
     }
+
+    /**
+     * @Route("/monthly-expenses/{month}/{year}", name="get_expenses_by_month", defaults={"year"=null})
+     * @Method("GET")
+     * @param Request $request
+     * @param string $month
+     * @param string $year
+     * @return JsonResponse
+     */
+    public function getByMonth(Request $request, string $month, ?string $year): JsonResponse
+    {
+        $user = $this->authenticator->getUser(
+            $this->authenticator->getCredentials($request),
+            $this->userProvider
+        );
+
+        $page = $request->query->get('page');
+        $limit = $request->query->get('limit');
+
+        $repository = $this->getDoctrine()->getRepository(Expenses::class);
+
+        if(!$page || !is_numeric($page) || !$limit || !is_numeric($limit)) {
+            $results = $repository->getExpensesByMonth($user->getId(), $month, $year);
+        } else {
+            $results = $repository->getExpensesByMonth($user->getId(), $year, (int)$page, (int)$limit);
+        }
+
+        if (!$results) {
+            return new JsonResponse(['data' => []]);
+        }
+
+        $expenses = $this->serializer->serialize(
+            ['data' => $results],
+            'json',
+            SerializationContext::create()
+                ->setGroups(['Default'])
+                ->enableMaxDepthChecks()
+        );
+
+        return new JsonResponse($expenses, 200, [], true);
+    }
 }
-
-

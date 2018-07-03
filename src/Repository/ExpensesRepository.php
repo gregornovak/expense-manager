@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Expenses;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -27,6 +28,34 @@ class ExpensesRepository extends ServiceEntityRepository
             ->where('e.user = :user')
             ->setParameter(':user', $user)
             ->orderBy('e.id', 'ASC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param int $user
+     * @param int $month
+     * @param int|null $year
+     * @param int $page
+     * @param int $limit
+     * @return mixed
+     *
+     */
+    public function getExpensesByMonth(int $user, int $month, ?int $year, int $page = 1, int $limit = 10)
+    {
+        $offset = ($page - 1) * $limit;
+        $year = $year ?? date("Y");
+        return $this->createQueryBuilder('e')
+            ->select()
+            ->where('e.user = :user')
+            ->andWhere('MONTH(e.added) = :month')
+            ->andWhere('YEAR(e.added) = :year')
+            ->setParameter(':user', $user)
+            ->setParameter(':month', $month)
+            ->setParameter(':year', $year)
+            ->orderBy('e.added', 'ASC')
             ->setFirstResult($offset)
             ->setMaxResults($limit)
             ->getQuery()
