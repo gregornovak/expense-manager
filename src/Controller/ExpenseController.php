@@ -365,7 +365,7 @@ class ExpenseController extends Controller
         if(!$page || !is_numeric($page) || !$limit || !is_numeric($limit)) {
             $results = $repository->getExpensesByMonth($user->getId(), $month, $year);
         } else {
-            $results = $repository->getExpensesByMonth($user->getId(), $year, (int)$page, (int)$limit);
+            $results = $repository->getExpensesByMonth($user->getId(), $month, $year, (int)$page, (int)$limit);
         }
 
         if (!$results) {
