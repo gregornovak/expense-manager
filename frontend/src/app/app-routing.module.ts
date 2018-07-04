@@ -1,9 +1,10 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgModule }             from '@angular/core';
+import { CommonModule }         from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from "./login/login.component";
-import { BaseComponent } from "./base/base.component";
-import { HomeComponent } from "./base/home/home.component";
+import { LoginComponent }       from "./login/login.component";
+import { BaseComponent }        from "./base/base.component";
+import { HomeComponent }        from "./base/home/home.component";
+import { AuthGuard }            from "./guards/auth.guard";
 
 const routes: Routes = [
     {
@@ -17,11 +18,13 @@ const routes: Routes = [
             },
             {
                 path: 'home',
-                component: HomeComponent
+                component: HomeComponent,
+                canActivate: [AuthGuard]
             }
         ]
     },
-    { path: 'login', component: LoginComponent }
+    { path: 'login', component: LoginComponent },
+    { path: '**', redirectTo: '' }
 ];
 
 @NgModule({
