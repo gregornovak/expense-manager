@@ -10,6 +10,7 @@ const routes: Routes = [
     {
         path: '',
         component: BaseComponent,
+        canActivate: [AuthGuard],
         children: [
             {
                 path: '',
@@ -19,7 +20,6 @@ const routes: Routes = [
             {
                 path: 'home',
                 component: HomeComponent,
-                canActivate: [AuthGuard]
             }
         ]
     },

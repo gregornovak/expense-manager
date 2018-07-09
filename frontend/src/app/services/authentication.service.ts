@@ -9,11 +9,12 @@ export class AuthenticationService {
     login(email: string, password: string) {
         return this.http.post<any>(`http://docker.localhost:8000/api/login`, {email: email, password: password})
             .pipe(map(user => {
-                // login successful if there's a jwt token in the response
-                console.log(user);
                 if (user && user.token) {
-                    // store user details and jwt token in local storage to keep user logged in between page refreshes
+                    let parsedToken = this.parseJwt(user.token);
+                    let exp = new Date(parsedToken.exp * 1000) / 1000;
+
                     localStorage.setItem('currentUser', JSON.stringify(user));
+                    localStorage.setItem('exp', JSON.stringify(exp));
                 }
 
                 return user;
@@ -24,4 +25,10 @@ export class AuthenticationService {
         // remove user from local storage to log user out
         localStorage.removeItem('currentUser');
     }
+
+    private parseJwt (token : string) {
+        let base64Url = token.split('.')[1];
+        let base64 = base64Url.replace('-', '+').replace('_', '/');
+        return JSON.parse(window.atob(base64));
+    };
 }
