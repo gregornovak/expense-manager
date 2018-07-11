@@ -11,10 +11,10 @@ export class AuthenticationService {
             .pipe(map(user => {
                 if (user && user.token) {
                     let parsedToken = this.parseJwt(user.token);
-                    let exp = new Date(parsedToken.exp * 1000) / 1000;
+                    // let exp = + new Date(parsedToken.exp);
 
                     localStorage.setItem('currentUser', JSON.stringify(user));
-                    localStorage.setItem('exp', JSON.stringify(exp));
+                    localStorage.setItem('exp', JSON.stringify(parsedToken.exp));
                 }
 
                 return user;
@@ -24,6 +24,7 @@ export class AuthenticationService {
     logout() {
         // remove user from local storage to log user out
         localStorage.removeItem('currentUser');
+        localStorage.removeItem('exp');
     }
 
     private parseJwt (token : string) {
