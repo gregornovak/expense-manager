@@ -20,7 +20,7 @@ export class AuthGuard implements CanActivate {
 
     private expireChecker(expiresAt: string) {
         let current = Math.floor(new Date() / 1000);
-        let exp = JSON.parse(expiresAt);
+        let exp = Number(JSON.parse(expiresAt));
 
         return exp > current;
     }

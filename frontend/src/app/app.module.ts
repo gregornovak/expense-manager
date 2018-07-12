@@ -13,6 +13,7 @@ import { AuthenticationService } from "./services/authentication.service";
 import { JwtInterceptor } from "./helpers/jwt.interceptor";
 import { AlertService } from "./services/alert.service";
 import { ReactiveFormsModule } from "@angular/forms";
+import {ExpenseService} from "./services/expense.service";
 
 @NgModule({
     declarations: [
@@ -32,6 +33,7 @@ import { ReactiveFormsModule } from "@angular/forms";
         AuthGuard,
         AuthenticationService,
         AlertService,
+        ExpenseService,
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
     ],
     bootstrap: [ AppComponent ]

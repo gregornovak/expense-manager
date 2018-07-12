@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { map }        from 'rxjs/operators';
+import { apiUrl }     from '../api-url';
 
 @Injectable()
 export class AuthenticationService {
     constructor(private http: HttpClient) { }
 
     login(email: string, password: string) {
-        return this.http.post<any>(`http://docker.localhost:8000/api/login`, {email: email, password: password})
+        return this.http.post<any>(`${apiUrl}login`, {email: email, password: password})
             .pipe(map(user => {
                 if (user && user.token) {
                     let parsedToken = this.parseJwt(user.token);
