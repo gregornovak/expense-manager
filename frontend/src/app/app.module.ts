@@ -1,6 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { LoginComponent } from "./login/login.component";
@@ -13,7 +12,8 @@ import { AuthenticationService } from "./services/authentication.service";
 import { JwtInterceptor } from "./helpers/jwt.interceptor";
 import { AlertService } from "./services/alert.service";
 import { ReactiveFormsModule } from "@angular/forms";
-import {ExpenseService} from "./services/expense.service";
+import { ExpenseService } from "./services/expense.service";
+import {HomeModule} from "./base/home/home.module";
 
 @NgModule({
     declarations: [
@@ -26,6 +26,7 @@ import {ExpenseService} from "./services/expense.service";
         BrowserModule,
         AppRoutingModule,
         BaseModule,
+        HomeModule,
         HttpClientModule,
         ReactiveFormsModule
     ],

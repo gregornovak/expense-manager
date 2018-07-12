@@ -12,8 +12,6 @@ export class AuthenticationService {
             .pipe(map(user => {
                 if (user && user.token) {
                     let parsedToken = this.parseJwt(user.token);
-                    // let exp = + new Date(parsedToken.exp);
-
                     localStorage.setItem('currentUser', JSON.stringify(user));
                     localStorage.setItem('exp', JSON.stringify(parsedToken.exp));
                 }
@@ -23,7 +21,6 @@ export class AuthenticationService {
     }
 
     logout() {
-        // remove user from local storage to log user out
         localStorage.removeItem('currentUser');
         localStorage.removeItem('exp');
     }
