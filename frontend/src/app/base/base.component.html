@@ -1,13 +1,20 @@
 <mat-toolbar color="primary">
     <mat-toolbar-row>
         <span>First Line</span>
-        <!--<span class="example-spacer"></span>-->
         <mat-icon>favorite</mat-icon>
         <mat-icon>delete</mat-icon>
     </mat-toolbar-row>
 </mat-toolbar>
 <header>
-    <h2>This is a header</h2>
+    <mat-sidenav-container class="example-container">
+        <mat-sidenav #sidenav mode="side">
+            Sidenav content
+        </mat-sidenav>
+
+        <mat-sidenav-content>
+            <p>sjeos</p>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
 </header>
 <main>
     <router-outlet></router-outlet>

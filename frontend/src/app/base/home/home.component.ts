@@ -20,5 +20,5 @@ export class HomeComponent implements OnInit {
         this.expenseService.getAll().subscribe(expenses => { this.expenses = expenses.data; });
     }
 
-    displayedColumns: string[] = ['id', 'name'];
+    displayedColumns: string[] = ['id', 'name', 'amount'];
 }

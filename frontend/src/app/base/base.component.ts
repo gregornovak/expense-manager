@@ -9,12 +9,4 @@ export class BaseComponent {
     title = 'base';
 
     constructor() {}
-
-    // ngOnInit() {
-    //     this.getExpenses();
-    // }
-    //
-    // private getExpenses() {
-    //     this.expenseService.getAll().subscribe(expenses => { this.expenses = expenses; });
-    // }
 }
