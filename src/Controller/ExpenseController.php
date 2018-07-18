@@ -73,7 +73,7 @@ class ExpenseController extends Controller
         }
 
         $expenses = $this->serializer->serialize(
-            ['data' => $results],
+            $results,
             'json',
             SerializationContext::create()
                 ->setGroups(['Default'])

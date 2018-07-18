@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ExpenseService } from "../../services/expense.service";
+import { ExpenseService }    from "../../services/expense.service";
+import { Expenses }          from "../../models/expenses.model";
 
 @Component({
     selector: 'home',
@@ -8,7 +9,7 @@ import { ExpenseService } from "../../services/expense.service";
 })
 export class HomeComponent implements OnInit {
     title = 'home';
-    private expenses = [];
+    private expenses : Expenses[];
 
     constructor(private expenseService: ExpenseService) {}
 
@@ -16,9 +17,16 @@ export class HomeComponent implements OnInit {
         this.getExpenses();
     }
 
-    private getExpenses() {
-        this.expenseService.getAll().subscribe(expenses => { this.expenses = expenses.data; });
+    private getExpenses(): void {
+        this.expenseService.getAll().subscribe(
+        result => {
+                this.expenses = result;
+            },
+            error => {
+                console.log(error);
+            }
+        );
     }
 
-    displayedColumns: string[] = ['id', 'name', 'amount'];
+    displayedColumns: string[] = ['id', 'name', 'amount', 'payee', 'added'];
 }
