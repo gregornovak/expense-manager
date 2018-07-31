@@ -15,6 +15,7 @@ import { ReactiveFormsModule }   from "@angular/forms";
 import { ExpenseService }        from "./services/expense.service";
 import { HomeModule }            from "./base/home/home.module";
 import { MatSidenavModule }      from "@angular/material";
+import { LoginModule }           from './login/login.module';
 
 @NgModule({
     declarations: [
@@ -30,7 +31,8 @@ import { MatSidenavModule }      from "@angular/material";
         HomeModule,
         HttpClientModule,
         ReactiveFormsModule,
-        MatSidenavModule
+        MatSidenavModule,
+        LoginModule
     ],
     providers: [
         AuthGuard,

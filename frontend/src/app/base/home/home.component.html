@@ -1,13 +1,9 @@
-<p>Hello from home component</p>
 <style>
     td.mat-cell, th.mat-header-cell {
         padding: 0 20px;
     }
 </style>
-<div *ngIf="expenses">
-    <!--<ul>-->
-        <!--<li *ngFor="let expense of expenses">{{ expense.name }}</li>-->
-    <!--</ul>-->
+<div id="expenses-table" *ngIf="expenses">
     <table mat-table [dataSource]="expenses" class="mat-elevation-z8">
         <ng-container matColumnDef="id">
             <th mat-header-cell *matHeaderCellDef> No. </th>

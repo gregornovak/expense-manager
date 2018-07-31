@@ -2,18 +2,17 @@
 
 namespace App\Controller;
 
-use App\Entity\ExpensesCategories;
-use App\Security\JwtAuthenticator;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\SerializerInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use JMS\Serializer\SerializerInterface;
+use App\Entity\ExpensesCategories;
 
 /**
  * @Route("/api")
@@ -24,95 +23,55 @@ class ExpenseCategoryController extends Controller
 
     private $validator;
 
-    private $authenticator;
-
-    private $userProvider;
-
     public function __construct(
         SerializerInterface $serializer,
-        ValidatorInterface $validator,
-        JwtAuthenticator $authenticator,
-        UserProviderInterface $userProvider
+        ValidatorInterface $validator
     )
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
-        $this->authenticator = $authenticator;
-        $this->userProvider = $userProvider;
     }
 
 	/**
-	 * @Route("/expense-categories", name="get_expense_categories_collection")
+	 * @Route("/expense-categories", name="get_expense_categories")
      * @Method("GET")
-     * @param Request $request
      * @return JsonResponse
      */
-    public function index(Request $request): JsonResponse
+    public function index() : JsonResponse
 	{
-        $user = $this->authenticator->getUser(
-            $this->authenticator->getCredentials($request),
-            $this->userProvider
-        );
+		$em = $this->getDoctrine()->getManager();
+        $categories = $em->getRepository(ExpensesCategories::class)->findAll();
 
-        $page = $request->query->get('page');
-        $limit = $request->query->get('limit');
-
-        $repository = $this->getDoctrine()->getRepository(ExpensesCategories::class);
-
-        if(!$page || !is_numeric($page) || !$limit || !is_numeric($limit)) {
-            $results = $repository->getAll($user->getId());
-        } else {
-            $results = $repository->getAll($user->getId(), (int)$page, (int)$limit);
+        if (!$categories) {
+            throw new HttpException(404, '');
+            return new JsonResponse(['success' => true, 'data' => []], 204);
         }
 
-        if (!$results) {
-            return new JsonResponse(['data' => []]);
-        }
-        
-        $categories = $this->serializer->serialize([
-            'data' => $results],
-            'json',
-            SerializationContext::create()
-                ->setGroups(['Default'])
-        );
+        // $books = $this->serializer->serialize(['success' => true, 'data' => $books], 'json');
 
-        return new JsonResponse($categories, 200, [], true);
+		return new JsonResponse(['ena', 'dva', 'tri']);
 	}
 
 	/**
 	 * @Route("/expense-categories/{id}", name="get_expense_category")
      * @Method("GET")
-     * @param Request $request
      * @param string $id
      * @return JsonResponse
-     * @throws HttpException
      */
-    public function getCategory(Request $request, string $id): JsonResponse
+    public function get(string $id): JsonResponse
     {
-        $user = $this->authenticator->getUser(
-            $this->authenticator->getCredentials($request),
-            $this->userProvider
-        );
+        // if (!$id) {
+        //     throw new HttpException(400, "Invalid id");
+        // }
 
-        $em = $this->getDoctrine()->getManager();
-        $result = $em->getRepository(ExpensesCategories::class)->find($id);
+		// $em = $this->getDoctrine()->getManager();
+		// $book = $em->getRepository(Book::class)->find($id);
 
-        if(!$result) {
-            throw new HttpException(404,'Resource does not exist.');
-        }
+        // if (!$book) {
+		// 	throw new HttpException(400, "Invalid data");
+		// }
 
-        if($user->getId() != $result->getUser()->getId()) {
-            throw new HttpException(400,'You do not have permission to view this resource.');
-        }
-
-        $category = $this->serializer->serialize([
-            'data' => $result],
-            'json',
-            SerializationContext::create()
-                ->setGroups(['Default'])
-        );
-
-		return new JsonResponse($category, 200, [], true);
+		return new JsonResponse([$id => 'expense-category']);
 	}
 
 	/**
@@ -126,55 +85,6 @@ class ExpenseCategoryController extends Controller
     {
         $data = $this->serializer
             ->deserialize(
-                $request->getContent(), 
-                ExpensesCategories::class, 
-                'json'
-            );
-
-        $errors = $this->validator->validate($data);
-
-        if(count($errors) > 0) {
-            throw new HttpException(400, 'You must provide category property');
-        }
-
-        $user = $this->authenticator->getUser(
-            $this->authenticator->getCredentials($request),
-            $this->userProvider
-        );
-
-        $now = new \DateTime('now', new \DateTimeZone('Europe/Ljubljana'));
-
-        $expenseCategory = new ExpensesCategories();
-        $expenseCategory->setCategory($data->getCategory());
-        $expenseCategory->setUser($user);
-        $expenseCategory->setAdded($now);
-        $expenseCategory->setUpdated($now);
-
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($expenseCategory);
-        $em->flush();
-
-        $response = $this->serializer->serialize([
-            'data' => $expenseCategory],
-            'json',
-            SerializationContext::create()
-                ->setGroups(['Default'])
-            );
-
-        return new JsonResponse($response, 201, [], true);
-    }
-
-	/**
-	 * @Route("/expense-categories/{id}", name="update_expense_category")
-     * @param Request $request
-     * @param string $id
-     * @return JsonResponse
-     * @throws HttpException
-	 */
-    public function update(Request $request, string $id): JsonResponse
-    {
-        $data = $this->serializer
-            ->deserialize(
                 $request->getContent(),
                 ExpensesCategories::class,
                 'json'
@@ -183,76 +93,71 @@ class ExpenseCategoryController extends Controller
         $errors = $this->validator->validate($data);
 
         if(count($errors) > 0) {
-            throw new HttpException(400, 'You must provide category property');
+            throw new HttpException(400, "You must provide category property");
         }
 
-        $user = $this->authenticator->getUser(
-            $this->authenticator->getCredentials($request),
-            $this->userProvider
-        );
+        $now = new \DateTime('now', new \DateTimeZone('Europe/Ljubljana'));
+
+        $expenseCategory = new ExpensesCategories();
+        $expenseCategory->setCategory($data->getCategory());
+        $expenseCategory->setAdded($now);
+        $expenseCategory->setUpdated($now);
 
         $em = $this->getDoctrine()->getManager();
+        $em->persist($expenseCategory);
 
-        $category = $em->getRepository(ExpensesCategories::class)
-            ->find($id);
-
-        if(!$category) {
-            throw new HttpException(404, 'Resource not found.');
+        try {
+            $em->flush();
+        } catch(\Doctrine\ORM\ORMException $e) {
+            throw new HttpException(400, "Error saving data to database.");
         }
 
-        if($user->getId() != $category->getUser()->getId()) {
-            throw new HttpException(400, 'You do not have permission to edit this resource.');
-        }
+        $response = $this->serializer->serialize(['data' => $expenseCategory], 'json');
 
-        $category->setCategory($data->getCategory());
-        $category->setUpdated(
-            new \DateTime('now',
-            new \DateTimeZone('Europe/Ljubljana'))
-        );
-
-        $em->flush();
-
-        $category = $this->serializer->serialize([
-            'data' => $category],
-            'json',
-            SerializationContext::create()
-                ->setGroups(['Default'])
-        );
-
-        return new JsonResponse($category, 200, [], true);
+        return new JsonResponse($response, 201, [], true);
     }
 
 	/**
-	 * @Route("/expense-categories/{id}", name="delete_expense_category")
-     * @Method("DELETE")
+	 * @Route("/books/edit/{id}", name="put_book")
+     * @METHOD("PUT")
      * @param Request $request
      * @param string $id
      * @return JsonResponse
-     * @throws HttpException
 	 */
-    public function delete(Request $request, string $id): JsonResponse
+    public function update(Request $request, string $id): JsonResponse
+    {
+        // $em = $this->getDoctrine()->getManager();
+        // $book = $em->getRepository(Book::class)->find($id);
+        // $form = $this->createForm(BookType::class, $book, ['method' => 'PUT']);
+        // $form->handleRequest($request);
+
+        // if ($form->isValid()) {
+        //     $em->persist($book);
+        //     $em->flush();
+
+        //     return $book;
+        // }
+
+        // throw new HttpException(400, "Invalid data");
+    }
+
+	/**
+	 * @Route("/books/remove/{id}", name="delete_book")
+     * @Method("DELETE")
+     * @param string $id
+     * @return JsonResponse
+	 */
+    public function delete(string $id): JsonResponse
     {
         $em = $this->getDoctrine()->getManager();
-        $category = $em->getRepository(ExpensesCategories::class)
-            ->find($id);
-
-        if(!$category) {
-            throw new HttpException(404, 'Resource not found.');
-        }
-
-        $user = $this->authenticator->getUser(
-            $this->authenticator->getCredentials($request),
-            $this->userProvider
-        );
-
-        if($user->getId() != $category->getUser()->getId()) {
-            throw new HttpException(400, 'You do not have permission to edit this resource.');
-        }
-
-        $em->remove($category);
+        $book = $em->getRepository(Book::class)->find($id);
+        $em->remove($book);
         $em->flush();
 
-        return new JsonResponse(null, 204);
+        if (!$id) {
+            throw new HttpException(400, "Invalid id");
+        }
+
+        return $book;
     }
 }
-
