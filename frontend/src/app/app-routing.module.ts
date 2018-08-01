@@ -5,6 +5,7 @@ import { LoginComponent }       from "./login/login.component";
 import { BaseComponent }        from "./base/base.component";
 import { HomeComponent }        from "./base/home/home.component";
 import { AuthGuard }            from "./guards/auth.guard";
+import { AddExpenseComponent }  from "./base/add-expense/add-expense.component";
 
 const routes: Routes = [
     {
@@ -20,10 +21,15 @@ const routes: Routes = [
             {
                 path: 'home',
                 component: HomeComponent,
+            },
+            {
+                path: 'expense/new',
+                component: AddExpenseComponent,
             }
         ]
     },
     { path: 'login', component: LoginComponent },
+    { path: 'logout', component: LoginComponent },
     { path: '**', redirectTo: '' }
 ];
 

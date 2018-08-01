@@ -138,7 +138,7 @@ class ExpenseController extends Controller
         if(!isset($related->expenses_category) || empty($related->expenses_category)
         )
         {
-            throw new HttpException(400, 'You must expenses_category id');
+            throw new HttpException(400, 'You must set expenses_category id');
         }
 
         $em = $this->getDoctrine()->getManager();

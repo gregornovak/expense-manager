@@ -1,4 +1,4 @@
-export class Expenses {
+export class Expense {
     id : number;
     added: string;
     amount: number;

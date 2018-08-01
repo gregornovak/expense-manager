@@ -1,11 +1,22 @@
-<mat-toolbar color="primary">
+<mat-toolbar color="primary" class="mat-elevation-z6">
     <mat-toolbar-row>
-        <span>First Line</span>
-        <mat-icon>favorite</mat-icon>
-        <mat-icon>delete</mat-icon>
+        <nav>
+            <span class="logo-wrapper">
+                <mat-icon>euro_symbol</mat-icon>
+            </span>
+            <a [routerLink]="['/home']" mat-button class="mat-button">Expenses</a>
+            <a [routerLink]="['/expense/new']" mat-button class="mat-button">Add expense</a>
+            <a [routerLink]="['/logout']" mat-button class="mat-button">Logout</a>
+            <a id="user-nav">
+                <span class="logo-wrapper">
+                    <mat-icon>account_circle</mat-icon>
+                </span>
+                <span>{{ firstname }} {{ lastname }}</span>
+            </a>
+        </nav>
     </mat-toolbar-row>
 </mat-toolbar>
-<header>
+<!-- <header>
     <mat-sidenav-container class="example-container">
         <mat-sidenav #sidenav mode="side">
             Sidenav content
@@ -15,7 +26,7 @@
             <p>This is a header</p>
         </mat-sidenav-content>
     </mat-sidenav-container>
-</header>
+</header> -->
 <main>
     <router-outlet></router-outlet>
 </main>

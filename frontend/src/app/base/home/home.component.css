@@ -1,3 +1,10 @@
-#expenses-table table{
+/* #expenses-table table{
     margin: 0 auto;
+} */
+
+td.mat-cell, th.mat-header-cell {
+        padding: 0 20px;
+    }
+#expenses-table {
+    margin-top: 50px;
 }

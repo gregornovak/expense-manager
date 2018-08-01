@@ -16,13 +16,16 @@ import { ExpenseService }        from "./services/expense.service";
 import { HomeModule }            from "./base/home/home.module";
 import { MatSidenavModule }      from "@angular/material";
 import { LoginModule }           from './login/login.module';
+import { AddExpenseModule }      from "./base/add-expense/add-expense.module";
+import { AddExpenseComponent }   from './base/add-expense/add-expense.component';
 
 @NgModule({
     declarations: [
         AppComponent,
         HomeComponent,
         BaseComponent,
-        LoginComponent
+        LoginComponent,
+        AddExpenseComponent
     ],
     imports: [
         BrowserModule,
@@ -32,7 +35,8 @@ import { LoginModule }           from './login/login.module';
         HttpClientModule,
         ReactiveFormsModule,
         MatSidenavModule,
-        LoginModule
+        LoginModule,
+        AddExpenseModule
     ],
     providers: [
         AuthGuard,

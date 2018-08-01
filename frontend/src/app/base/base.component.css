@@ -3,3 +3,13 @@ main {
     margin: 0 auto;
     width: 80%;
 }
+nav {
+    display: flex;
+    flex: 1;
+}
+.logo-wrapper mat-icon {
+    vertical-align: middle;
+}
+#user-nav {
+    margin-left: auto;
+}

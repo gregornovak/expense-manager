@@ -29,7 +29,7 @@ class UserController extends Controller
     private $validator;
 
     public function __construct(
-        SerializerInterface $serializer, 
+        SerializerInterface $serializer,
         ValidatorInterface $validator
     )
     {
@@ -55,7 +55,7 @@ class UserController extends Controller
     public function getAction(string $id)
     {
         return new JsonResponse([$id => 'Franci petek']);
-    }   
+    }
 
     /**
      * @Route(path="/users/{id}", name="edit_user")
@@ -146,7 +146,7 @@ class UserController extends Controller
     {
         $data = $this->serializer->deserialize($request->getContent(), User::class, 'json');
         $errors = $this->validator->validate($data, null, ['login']);
-        
+
         if(count($errors) > 0) {
             throw new HttpException(400, "Email and Password are required fields");
         }
@@ -157,10 +157,10 @@ class UserController extends Controller
         if (!$user) {
             throw $this->createNotFoundException();
         }
-        
+
         $isValid = $this->get('security.password_encoder')
             ->isPasswordValid($user, $data->getPassword());
-            
+
         if (!$isValid) {
             throw new BadCredentialsException();
         }
@@ -168,6 +168,8 @@ class UserController extends Controller
         $token = $this->get('lexik_jwt_authentication.encoder')
             ->encode([
                 'email' => $user->getEmail(),
+                'firstname' => $user->getFirstname(),
+                'lastname' => $user->getLastname(),
                 'exp' => time() + 3600 // 1 hour expiration
         ]);
 

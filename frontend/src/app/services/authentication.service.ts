@@ -14,6 +14,8 @@ export class AuthenticationService {
                     let parsedToken = this.parseJwt(user.token);
                     localStorage.setItem('currentUser', JSON.stringify(user));
                     localStorage.setItem('exp', JSON.stringify(parsedToken.exp));
+                    localStorage.setItem('firstname', JSON.stringify(parsedToken.firstname));
+                    localStorage.setItem('lastname', JSON.stringify(parsedToken.lastname));
                 }
 
                 return user;
@@ -23,6 +25,8 @@ export class AuthenticationService {
     logout() {
         localStorage.removeItem('currentUser');
         localStorage.removeItem('exp');
+        localStorage.removeItem('firstname');
+        localStorage.removeItem('lastname');
     }
 
     private parseJwt (token : string) {
