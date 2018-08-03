@@ -1,23 +1,44 @@
-<form [formGroup]="addExpenseForm" (ngSubmit)="onSubmit()">
+<mat-card class="add-expense-card">
+    <mat-card-header>
+        <div mat-card-avatar>
+            <mat-icon>create</mat-icon>
+        </div>
 
-    <mat-card-content>
-        <mat-form-field class="full-width">
-            <input type="text" formControlName="name" id="name" matInput placeholder="Name">
-        </mat-form-field>
-        <mat-form-field class="full-width">
-            <input type="text" formControlName="amount" id="amount" matInput placeholder="Amount">
-        </mat-form-field>
-        <mat-form-field class="full-width">
-            <input type="text" formControlName="currency" id="currency" matInput placeholder="Currency">
-        </mat-form-field>
-        <mat-form-field class="full-width">
-            <input type="text" formControlName="expenses_category" id="expenses_category" matInput placeholder="Expense Category">
-        </mat-form-field>
-    </mat-card-content>
+        <mat-card-title class="expense-title">Add an expense!</mat-card-title>
+    </mat-card-header>
+    <form [formGroup]="addExpenseForm" (ngSubmit)="onSubmit()">
+        <mat-card-content>
+            <mat-form-field class="full-width">
+                <input type="text" formControlName="name" id="name" matInput placeholder="Name">
+            </mat-form-field>
+            <mat-form-field class="full-width">
+                <input type="text" formControlName="amount" id="amount" matInput placeholder="Amount">
+            </mat-form-field>
+            <mat-form-field class="full-width">
+                <input type="text" formControlName="currency" id="currency" matInput placeholder="Currency">
+            </mat-form-field>
+            <mat-form-field class="full-width">
+                <input type="text" formControlName="expenses_category" id="expenses_category" matInput placeholder="Expense Category">
+            </mat-form-field>
+            <mat-form-field class="full-width">
+                <input type="text" formControlName="payee" id="payee" matInput placeholder="Spent at">
+            </mat-form-field>
+            <mat-slide-toggle class="cash full-width" formControlName="cash" [color]="primary" [checked]="checked" [disabled]="disabled">
+                Paid with cash
+            </mat-slide-toggle>
+            <mat-slide-toggle class="status full-width" formControlName="status" [color]="primary" [checked]="checked" [disabled]="disabled">
+                Paid
+            </mat-slide-toggle>
+            <mat-form-field class="full-width">
+                <textarea matInput class="description" formControlName="description" placeholder="Description"></textarea>
+            </mat-form-field>
 
-    <mat-card-actions>
-        <button [disabled]="loading" mat-raised-button color="primary">Add expense</button>
-        <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
-        />
-    </mat-card-actions>
-</form>
+        </mat-card-content>
+
+        <mat-card-actions>
+            <button [disabled]="loading" mat-raised-button color="primary">Add expense</button>
+            <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
+            />
+        </mat-card-actions>
+    </form>
+</mat-card>
