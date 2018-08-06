@@ -6,29 +6,47 @@
 
         <mat-card-title class="expense-title">Add an expense!</mat-card-title>
     </mat-card-header>
-    <form [formGroup]="addExpenseForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <mat-card-content>
+
             <mat-form-field class="full-width">
                 <input type="text" formControlName="name" id="name" matInput placeholder="Name">
             </mat-form-field>
+
             <mat-form-field class="full-width">
                 <input type="text" formControlName="amount" id="amount" matInput placeholder="Amount">
             </mat-form-field>
+
             <mat-form-field class="full-width">
                 <input type="text" formControlName="currency" id="currency" matInput placeholder="Currency">
             </mat-form-field>
+
             <mat-form-field class="full-width">
-                <input type="text" formControlName="expenses_category" id="expenses_category" matInput placeholder="Expense Category">
+                <mat-select placeholder="Expense Category" formControlName="expenses_category" id=expenses_category matInput>
+                    <mat-option *ngFor="let expenseCategory of expenseCategories" [value]="expenseCategory.id">
+                        {{ expenseCategory.category }}
+                    </mat-option>
+                </mat-select>
             </mat-form-field>
+
             <mat-form-field class="full-width">
                 <input type="text" formControlName="payee" id="payee" matInput placeholder="Spent at">
             </mat-form-field>
-            <mat-slide-toggle class="cash full-width" formControlName="cash" [color]="primary" [checked]="checked" [disabled]="disabled">
+
+            <!-- <mat-form-field>
+                <input matInput [matDatepicker]="picker" placeholder="Spent at">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field> -->
+
+            <mat-slide-toggle class="cash full-width" formControlName="cash" [color]="primary" [checked]="checked">
                 Paid with cash
             </mat-slide-toggle>
-            <mat-slide-toggle class="status full-width" formControlName="status" [color]="primary" [checked]="checked" [disabled]="disabled">
+
+            <mat-slide-toggle class="status full-width" formControlName="status" [color]="primary" [checked]="checked">
                 Paid
             </mat-slide-toggle>
+
             <mat-form-field class="full-width">
                 <textarea matInput class="description" formControlName="description" placeholder="Description"></textarea>
             </mat-form-field>

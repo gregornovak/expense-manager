@@ -1,35 +1,26 @@
-<mat-toolbar color="primary" class="mat-elevation-z6">
-    <mat-toolbar-row>
-        <nav>
-            <span class="logo-wrapper">
-                <mat-icon>euro_symbol</mat-icon>
-            </span>
-            <a [routerLink]="['/home']" mat-button class="mat-button">Expenses</a>
-            <a [routerLink]="['/expense/new']" mat-button class="mat-button">Add expense</a>
-            <a [routerLink]="['/logout']" mat-button class="mat-button">Logout</a>
-            <a id="user-nav">
+<div id="wrapper">
+    <mat-toolbar color="primary" class="mat-elevation-z6">
+        <mat-toolbar-row>
+            <nav>
                 <span class="logo-wrapper">
-                    <mat-icon>account_circle</mat-icon>
+                    <mat-icon>euro_symbol</mat-icon>
                 </span>
-                <span>{{ firstname }} {{ lastname }}</span>
-            </a>
-        </nav>
-    </mat-toolbar-row>
-</mat-toolbar>
-<!-- <header>
-    <mat-sidenav-container class="example-container">
-        <mat-sidenav #sidenav mode="side">
-            Sidenav content
-        </mat-sidenav>
-
-        <mat-sidenav-content>
-            <p>This is a header</p>
-        </mat-sidenav-content>
-    </mat-sidenav-container>
-</header> -->
-<main>
-    <router-outlet></router-outlet>
-</main>
-<footer>
-    <h3>This is a footer</h3>
-</footer>
+                <a [routerLink]="['/home']" mat-button class="mat-button">Expenses</a>
+                <a [routerLink]="['/expense/new']" mat-button class="mat-button">Add expense</a>
+                <a [routerLink]="['/logout']" mat-button class="mat-button">Logout</a>
+                <a id="user-nav">
+                    <span class="logo-wrapper">
+                        <mat-icon>account_circle</mat-icon>
+                    </span>
+                    <span>{{ firstname }} {{ lastname }}</span>
+                </a>
+            </nav>
+        </mat-toolbar-row>
+    </mat-toolbar>
+    <main>
+        <router-outlet></router-outlet>
+    </main>
+    <footer>
+        <p>© Gregor Novak</p>
+    </footer>
+</div>

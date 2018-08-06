@@ -1,14 +1,18 @@
 import { NgModule } from '@angular/core';
-import { MatSlideToggleModule, MatInputModule } from '@angular/material';
+import { MatSlideToggleModule, MatInputModule, MatSelectModule, MatFormFieldModule } from '@angular/material';
 
 @NgModule({
     imports: [
         MatInputModule,
-        MatSlideToggleModule
+        MatSlideToggleModule,
+        MatFormFieldModule,
+        MatSelectModule
     ],
     exports: [
         MatInputModule,
-        MatSlideToggleModule
+        MatSlideToggleModule,
+        MatFormFieldModule,
+        MatSelectModule
     ]
 })
 

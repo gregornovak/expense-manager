@@ -2,6 +2,7 @@ main {
     max-width: 1200px;
     margin: 0 auto;
     width: 80%;
+    flex: 1;
 }
 nav {
     display: flex;
@@ -12,4 +13,17 @@ nav {
 }
 #user-nav {
     margin-left: auto;
+}
+#wrapper {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+footer {
+    background-color: #673ab7;
+}
+footer p {
+    color: white;
+    text-align: center;
+    font-family: Roboto,"Helvetica Neue",sans-serif;
 }

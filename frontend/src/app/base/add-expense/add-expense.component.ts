@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ExpenseService } from '../../services/expense.service';
+import { ExpenseCategoriesService } from '../../services/expense-categories.service';
 import { Router } from '@angular/router';
+import { ExpenseCategories } from '../../models/expense-categories.model';
 
 @Component({
     selector: 'add-expense',
@@ -10,56 +12,55 @@ import { Router } from '@angular/router';
 })
 export class AddExpenseComponent implements OnInit {
 
-    private addExpenseForm: FormGroup;
+    private form: FormGroup;
     private loading = false;
     private submitted = false;
+    private expenseCategories: ExpenseCategories[];
 
     constructor(
         private formBuilder: FormBuilder,
         private expenseService: ExpenseService,
+        private expenseCategoriesService: ExpenseCategoriesService,
         private router: Router
     ) { }
 
     ngOnInit() {
-        this.addExpenseForm = this.formBuilder.group({
+        this.form = this.formBuilder.group({
             name: ['', Validators.required],
             amount: ['', Validators.required],
             currency: ['', Validators.required],
-            cash: [],
-            payee: [],
-            status: [],
-            description: [],
+            cash: [false],
+            payee: [''],
+            status: [false],
+            description: [''],
             expenses_category: ['', Validators.required]
         });
+
+        this.expenseCategoriesService.getAll()
+            .subscribe(data => {
+                this.expenseCategories = data;
+            },
+            error => {
+                console.log(error);
+            });
     }
 
-    get f() { return this.addExpenseForm.controls; }
+    get f() { return this.form.controls; }
 
     onSubmit() {
         this.submitted = true;
 
-        // stop here if form is invalid
-        if (this.addExpenseForm.invalid) {
+        if (this.form.invalid) {
             return;
         }
 
         this.loading = true;
-        console.log(this.addExpenseForm.value);
-        this.expenseService.create(this.addExpenseForm.value)
+        this.expenseService.create(this.form.value)
             .subscribe(data => {
+                console.log(data);
                 this.router.navigate(['home']);
             },
             error => {console.log(error);}
         );
-        // this.authenticationService.login(this.f.email.value, this.f.password.value)
-        //     .pipe(first())
-        //     .subscribe(
-        //         data => {
-        //             this.router.navigate([this.returnUrl]);
-        //         },
-        //         error => {
-        //             this.alertService.error(error);
-        //             this.loading = false;
-        //         });
     }
 }

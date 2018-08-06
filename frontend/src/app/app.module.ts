@@ -18,6 +18,7 @@ import { MatSidenavModule }      from "@angular/material";
 import { LoginModule }           from './login/login.module';
 import { AddExpenseModule }      from "./base/add-expense/add-expense.module";
 import { AddExpenseComponent }   from './base/add-expense/add-expense.component';
+import { ExpenseCategoriesService } from './services/expense-categories.service';
 
 @NgModule({
     declarations: [
@@ -43,6 +44,7 @@ import { AddExpenseComponent }   from './base/add-expense/add-expense.component'
         AuthenticationService,
         AlertService,
         ExpenseService,
+        ExpenseCategoriesService,
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
     ],
     bootstrap: [ AppComponent ]

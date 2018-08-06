@@ -9,3 +9,7 @@
     font-weight: bold;
     font-size: 1.3em;
 }
+.mat-card-actions {
+    margin-left: 0;
+    margin-right: 0;
+}
