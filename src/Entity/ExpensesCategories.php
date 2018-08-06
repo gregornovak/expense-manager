@@ -49,6 +49,7 @@ class ExpensesCategories
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="expensesCategories")
      * @ORM\JoinColumn(nullable=false)
+     * @Serializer\Groups({"additional"})
      */
     private $user;
 

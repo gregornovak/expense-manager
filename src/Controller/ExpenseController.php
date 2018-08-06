@@ -184,9 +184,7 @@ class ExpenseController extends Controller
             $expense->setCash($data->getCash());
         }
 
-        if($data->getPayee()) {
-            $expense->setPayee($data->getPayee());
-        }
+        $expense->setPayee($data->getPayee() ?? "");
 
         if($data->getStatus()) {
             $expense->setStatus($data->getStatus());

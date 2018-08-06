@@ -2,7 +2,13 @@
 
 namespace App\Controller;
 
+
+use App\Entity\ExpensesCategories;
+use App\Entity\User;
+use App\Security\JwtAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
+use JMS\Serializer\SerializerInterface;
+use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -11,8 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use JMS\Serializer\SerializerInterface;
-use App\Entity\ExpensesCategories;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 /**
  * @Route("/api")
@@ -23,13 +28,21 @@ class ExpenseCategoryController extends Controller
 
     private $validator;
 
+    private $authenticator;
+
+    private $userProvider;
+
     public function __construct(
         SerializerInterface $serializer,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        JwtAuthenticator $authenticator,
+        UserProviderInterface $userProvider
     )
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
+        $this->authenticator = $authenticator;
+        $this->userProvider = $userProvider;
     }
 
 	/**
@@ -37,19 +50,36 @@ class ExpenseCategoryController extends Controller
      * @Method("GET")
      * @return JsonResponse
      */
-    public function index() : JsonResponse
+    public function index(Request $request) : JsonResponse
 	{
-		$em = $this->getDoctrine()->getManager();
-        $categories = $em->getRepository(ExpensesCategories::class)->findAll();
+        $authenticatedUser = $this->authenticator->getUser(
+            $this->authenticator->getCredentials($request),
+            $this->userProvider
+        );
 
-        if (!$categories) {
-            throw new HttpException(404, '');
-            return new JsonResponse(['success' => true, 'data' => []], 204);
+        $em = $this->getDoctrine()->getManager();
+        $user = $em->getRepository(User::class)->find($authenticatedUser->getId());
+
+        if (!$user) {
+            throw new HttpException(404, 'This user does not exist!');
         }
 
-        // $books = $this->serializer->serialize(['success' => true, 'data' => $books], 'json');
+        $categories = $em->getRepository(ExpensesCategories::class)
+            ->findCategoriesByUser($user->getId());
 
-		return new JsonResponse(['ena', 'dva', 'tri']);
+        if (!$categories) {
+            throw new HttpException(404, 'No categories available for this user!');
+        }
+
+        $response = $this->serializer->serialize(
+            $categories,
+            'json',
+            SerializationContext::create()
+                ->setGroups(['Default'])
+                ->enableMaxDepthChecks()
+        );
+
+		return new JsonResponse($response, 200, [], true);
 	}
 
 	/**

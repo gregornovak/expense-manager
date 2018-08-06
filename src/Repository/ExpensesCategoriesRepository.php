@@ -46,6 +46,16 @@ class ExpensesCategoriesRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findCategoriesByUser(int $user)
+    {
+        return $this->createQueryBuilder('e')
+            ->select()
+            ->andWhere('e.user = :user')
+            ->setParameter(':user', $user)
+            ->orderBy('e.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 //    /**
 //     * @return ExpensesCategories[] Returns an array of ExpensesCategories objects
 //     */
