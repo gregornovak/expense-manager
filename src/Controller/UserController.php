@@ -148,21 +148,21 @@ class UserController extends Controller
         $errors = $this->validator->validate($data, null, ['login']);
 
         if(count($errors) > 0) {
-            throw new HttpException(400, "Email and Password are required fields");
+            return new JsonResponse("Email and Password are required fields!", 400);
         }
 
         $user = $this->getDoctrine()->getRepository(User::class)
             ->findOneBy(['email'=> $data->getEmail()]);
 
         if (!$user) {
-            throw $this->createNotFoundException();
+            return new JsonResponse('User not found!', 404);
         }
 
         $isValid = $this->get('security.password_encoder')
             ->isPasswordValid($user, $data->getPassword());
 
         if (!$isValid) {
-            throw new BadCredentialsException();
+            return new JsonResponse('Wrong credentials!', 401);
         }
 
         $token = $this->get('lexik_jwt_authentication.encoder')
