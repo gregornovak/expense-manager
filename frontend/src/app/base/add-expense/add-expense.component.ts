@@ -4,6 +4,7 @@ import { ExpenseService } from '../../services/expense.service';
 import { ExpenseCategoriesService } from '../../services/expense-categories.service';
 import { Router } from '@angular/router';
 import { ExpenseCategories } from '../../models/expense-categories.model';
+import { Currency } from '../../models/currency.model';
 
 @Component({
     selector: 'add-expense',
@@ -16,6 +17,12 @@ export class AddExpenseComponent implements OnInit {
     private loading = false;
     private submitted = false;
     private expenseCategories: ExpenseCategories[];
+    private currencies: Currency[] = [
+        { value: "EUR", viewValue: "Euro - €" },
+        { value: "USD", viewValue: "United States dollar - $" },
+        { value: "CHF", viewValue: "Swiss franc - CHF" },
+        { value: "SEK", viewValue: "Swedish krona - kr" }
+    ];
 
     constructor(
         private formBuilder: FormBuilder,
@@ -48,19 +55,20 @@ export class AddExpenseComponent implements OnInit {
     get f() { return this.form.controls; }
 
     onSubmit() {
-        this.submitted = true;
+        console.log(this.form);
+        // this.submitted = true;
 
-        if (this.form.invalid) {
-            return;
-        }
+        // if (this.form.invalid) {
+        //     return;
+        // }
 
-        this.loading = true;
-        this.expenseService.create(this.form.value)
-            .subscribe(data => {
-                console.log(data);
-                this.router.navigate(['home']);
-            },
-            error => {console.log(error);}
-        );
+        // this.loading = true;
+        // this.expenseService.create(this.form.value)
+        //     .subscribe(data => {
+        //         console.log(data);
+        //         this.router.navigate(['home']);
+        //     },
+        //     error => {console.log(error);}
+        // );
     }
 }

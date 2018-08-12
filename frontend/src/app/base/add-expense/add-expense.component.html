@@ -18,7 +18,13 @@
             </mat-form-field>
 
             <mat-form-field class="full-width">
-                <input type="text" formControlName="currency" id="currency" matInput placeholder="Currency">
+
+                <mat-select formControlName="currency" placeholder="Currency">
+                    <mat-option *ngFor="let currency of currencies" [value]="currency.value">
+                        {{ currency.viewValue }}
+                    </mat-option>
+                </mat-select>
+                <!-- <input type="text" formControlName="currency" id="currency" matInput placeholder="Currency"> -->
             </mat-form-field>
 
             <mat-form-field class="full-width">
