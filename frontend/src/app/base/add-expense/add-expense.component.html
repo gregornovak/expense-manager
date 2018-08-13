@@ -11,21 +11,25 @@
 
             <mat-form-field class="full-width">
                 <input type="text" formControlName="name" id="name" matInput placeholder="Name">
+                <mat-icon matSuffix>short_text</mat-icon>
             </mat-form-field>
 
-            <mat-form-field class="full-width">
-                <input type="text" formControlName="amount" id="amount" matInput placeholder="Amount">
-            </mat-form-field>
+            <div class="currency">
+                <mat-form-field class="half-width">
+                    <input type="text" formControlName="amount" type="number" id="amount" matInput placeholder="Amount">
+                    <mat-icon matSuffix>money&nbsp;</mat-icon>
+                </mat-form-field>
 
-            <mat-form-field class="full-width">
+                <mat-form-field class="half-width">
 
-                <mat-select formControlName="currency" placeholder="Currency">
-                    <mat-option *ngFor="let currency of currencies" [value]="currency.value">
-                        {{ currency.viewValue }}
-                    </mat-option>
-                </mat-select>
-                <!-- <input type="text" formControlName="currency" id="currency" matInput placeholder="Currency"> -->
-            </mat-form-field>
+                    <mat-select formControlName="currency" placeholder="Currency">
+                        <mat-option *ngFor="let currency of currencies" [value]="currency.value">
+                            {{ currency.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-icon matSuffix>attach_money</mat-icon>
+                </mat-form-field>
+            </div>
 
             <mat-form-field class="full-width">
                 <mat-select placeholder="Expense Category" formControlName="expenses_category" id=expenses_category matInput>
@@ -33,10 +37,12 @@
                         {{ expenseCategory.category }}
                     </mat-option>
                 </mat-select>
+                <mat-icon matSuffix>category</mat-icon>
             </mat-form-field>
 
             <mat-form-field class="full-width">
                 <input type="text" formControlName="payee" id="payee" matInput placeholder="Spent at">
+                <mat-icon matSuffix>add_location</mat-icon>
             </mat-form-field>
 
             <!-- <mat-form-field>
@@ -55,14 +61,15 @@
 
             <mat-form-field class="full-width">
                 <textarea matInput class="description" formControlName="description" placeholder="Description"></textarea>
+                <mat-icon matSuffix>description</mat-icon>
             </mat-form-field>
 
         </mat-card-content>
 
         <mat-card-actions>
             <button [disabled]="loading" mat-raised-button color="primary">Add expense</button>
-            <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
-            />
+            <!-- <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/> -->
+            <div class="spinner" *ngIf="loading"></div>
         </mat-card-actions>
     </form>
 </mat-card>

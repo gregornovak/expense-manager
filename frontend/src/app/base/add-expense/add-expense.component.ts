@@ -33,9 +33,9 @@ export class AddExpenseComponent implements OnInit {
 
     ngOnInit() {
         this.form = this.formBuilder.group({
-            name: ['', Validators.required],
-            amount: ['', Validators.required],
-            currency: ['', Validators.required],
+            name: [null, Validators.required],
+            amount: [null, Validators.required],
+            currency: [null, Validators.required],
             cash: [false],
             payee: [''],
             status: [false],
@@ -55,20 +55,24 @@ export class AddExpenseComponent implements OnInit {
     get f() { return this.form.controls; }
 
     onSubmit() {
-        console.log(this.form);
-        // this.submitted = true;
+        this.submitted = true;
 
-        // if (this.form.invalid) {
-        //     return;
-        // }
+        if (this.form.invalid) {
+            return;
+        }
 
-        // this.loading = true;
-        // this.expenseService.create(this.form.value)
-        //     .subscribe(data => {
-        //         console.log(data);
-        //         this.router.navigate(['home']);
-        //     },
-        //     error => {console.log(error);}
-        // );
+        this.form.value.amount = this.form.value.amount * 100;
+        this.loading = true;
+        this.expenseService.create(this.form.value)
+            .subscribe(data => {
+                setTimeout(() => {
+                    this.router.navigate(['home']);
+                }, 500);
+            },
+            error => {
+                console.log(error);
+                this.loading = false;
+            }
+        );
     }
 }
