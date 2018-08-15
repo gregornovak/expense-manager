@@ -5,6 +5,7 @@ import { ExpenseCategoriesService } from '../../services/expense-categories.serv
 import { Router } from '@angular/router';
 import { ExpenseCategories } from '../../models/expense-categories.model';
 import { Currency } from '../../models/currency.model';
+import { LoadingComponent } from '../../shared/loading/loading.component';
 
 @Component({
     selector: 'add-expense',

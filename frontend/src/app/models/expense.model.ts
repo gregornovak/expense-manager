@@ -1,12 +1,12 @@
 export class Expense {
-    id : number;
+    id: number;
     added: string;
     amount: number;
-    cash? : boolean;
+    cash?: boolean;
     currency: string;
-    description? : string;
+    description?: string;
     name: string;
-    payee? : string;
-    status? : boolean;
+    payee?: string;
+    status?: boolean;
     updated: string;
 }

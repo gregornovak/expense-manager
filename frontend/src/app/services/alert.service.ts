@@ -25,13 +25,13 @@ export class AlertService {
     }
 
     error(message, keepAfterNavigationChange = false) {
-        if(message.error) {
-            message = message.error;
-        }
+        // if(message.error) {
+        //     message = message.error;
+        // }
 
-        if(message.length < 1) {
-            message = "An error occured, try again later!";
-        }
+        // if(message.length < 1) {
+        //     message = "An error occured, try again later!";
+        // }
 
         this.keepAfterNavigationChange = keepAfterNavigationChange;
         this.subject.next({ type: 'error', text: message });
