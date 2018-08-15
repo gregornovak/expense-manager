@@ -22,7 +22,7 @@ class ExpensesRepository extends ServiceEntityRepository
     public function getAll(int $user, int $page = 1, int $limit = 10)
     {
         $offset = ($page - 1) * $limit;
-        return $this->createQueryBuilder('e')
+        $results['data'] = $this->createQueryBuilder('e')
             ->select()
             ->where('e.user = :user')
             ->setParameter(':user', $user)
@@ -31,6 +31,15 @@ class ExpensesRepository extends ServiceEntityRepository
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
+
+        $results['count'] = $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->where('u.user = :user')
+            ->setParameter(':user', $user)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $results;
     }
 
     /**

@@ -65,8 +65,8 @@ class ExpenseController extends Controller
 
         if(is_numeric($page) &&
             is_numeric($limit) &&
-            $this->paginatorChecker->isWithinRange($page, $limit))
-        {
+            $this->paginatorChecker->isWithinRange($page, $limit)
+        ) {
             $results = $repository->getAll($user->getId(), (int)$page, (int)$limit);
         } else {
             $results = $repository->getAll($user->getId());
