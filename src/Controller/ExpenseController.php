@@ -6,6 +6,7 @@ use App\Entity\Expenses;
 use App\Entity\ExpensesCategories;
 use App\Entity\User;
 use App\Security\JwtAuthenticator;
+use App\Utils\PaginatorChecker;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
@@ -24,24 +25,24 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class ExpenseController extends Controller
 {
     private $serializer;
-
     private $validator;
-
     private $authenticator;
-
     private $userProvider;
+    private $paginatorChecker;
 
     public function __construct(
         SerializerInterface $serializer,
         ValidatorInterface $validator,
         JwtAuthenticator $authenticator,
-        UserProviderInterface $userProvider
+        UserProviderInterface $userProvider,
+        PaginatorChecker $paginatorChecker
     )
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->authenticator = $authenticator;
         $this->userProvider = $userProvider;
+        $this->paginatorChecker = $paginatorChecker;
     }
 
     /**
@@ -62,10 +63,13 @@ class ExpenseController extends Controller
 
         $repository = $this->getDoctrine()->getRepository(Expenses::class);
 
-        if(!$page || !is_numeric($page) || !$limit || !is_numeric($limit)) {
-            $results = $repository->getAll($user->getId());
-        } else {
+        if(is_numeric($page) &&
+            is_numeric($limit) &&
+            $this->paginatorChecker->isWithinRange($page, $limit))
+        {
             $results = $repository->getAll($user->getId(), (int)$page, (int)$limit);
+        } else {
+            $results = $repository->getAll($user->getId());
         }
 
         if (!$results) {
