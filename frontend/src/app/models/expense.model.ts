@@ -1,6 +1,6 @@
 export class Expense {
     id: number;
-    added: string;
+    added: Date;
     amount: number;
     cash?: boolean;
     currency: string;
@@ -8,5 +8,5 @@ export class Expense {
     name: string;
     payee?: string;
     status?: boolean;
-    updated: string;
+    updated: Date;
 }

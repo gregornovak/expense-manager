@@ -8,15 +8,19 @@ td.mat-cell, th.mat-header-cell {
     width: 100%;
 }
 .table-header {
-    min-height: 56px;
+    min-height: 86px;
     padding: 0 8px;
     display: flex;
-    background: #3F51B5;
+    background: #4dd0e1;
 }
 .table-header p {
     align-self: center;
     font-family: Roboto,"Helvetica Neue",sans-serif;
     color: #fff;
     padding-left: 5px;
-    font-size: 18px;
+    font-size: 1.6em;
+    flex: 1;
+}
+.table-header #actions {
+    align-self: center;
 }
