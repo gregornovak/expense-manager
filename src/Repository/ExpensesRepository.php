@@ -26,7 +26,7 @@ class ExpensesRepository extends ServiceEntityRepository
             ->select()
             ->where('e.user = :user')
             ->setParameter(':user', $user)
-            ->orderBy('e.id', 'ASC')
+            ->orderBy('e.id', 'DESC')
             ->setFirstResult($offset)
             ->setMaxResults($limit)
             ->getQuery()
