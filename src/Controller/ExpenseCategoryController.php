@@ -113,6 +113,18 @@ class ExpenseCategoryController extends Controller
      */
     public function save(Request $request): JsonResponse
     {
+        $authenticatedUser = $this->authenticator->getUser(
+            $this->authenticator->getCredentials($request),
+            $this->userProvider
+        );
+
+        $em = $this->getDoctrine()->getManager();
+        $user = $em->getRepository(User::class)->find($authenticatedUser->getId());
+
+        if (!$user) {
+            throw new HttpException(404, 'This user does not exist!');
+        }
+
         $data = $this->serializer
             ->deserialize(
                 $request->getContent(),
@@ -123,7 +135,7 @@ class ExpenseCategoryController extends Controller
         $errors = $this->validator->validate($data);
 
         if(count($errors) > 0) {
-            throw new HttpException(400, "You must provide category property");
+            throw new HttpException(400, 'You must provide category property');
         }
 
         $now = new \DateTime('now', new \DateTimeZone('Europe/Ljubljana'));
@@ -132,14 +144,14 @@ class ExpenseCategoryController extends Controller
         $expenseCategory->setCategory($data->getCategory());
         $expenseCategory->setAdded($now);
         $expenseCategory->setUpdated($now);
+        $expenseCategory->setUser($user);
 
-        $em = $this->getDoctrine()->getManager();
         $em->persist($expenseCategory);
 
         try {
             $em->flush();
         } catch(\Doctrine\ORM\ORMException $e) {
-            throw new HttpException(400, "Error saving data to database.");
+            throw new HttpException(400, 'Error saving data to database.');
         }
 
         $response = $this->serializer->serialize(['data' => $expenseCategory], 'json');
