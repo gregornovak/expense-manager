@@ -1,6 +1,6 @@
 {
-    "name": "tony133/symfony4-api-boilerplate-jwt-book",
-    "description": "Simple Example Api Rest Book with Symfony 4.1 and Json Web Token",
+    "name": "gregornovak/expense-manager",
+    "description": "Expense manager",
     "type": "project",
     "license": "MIT",
     "require": {
