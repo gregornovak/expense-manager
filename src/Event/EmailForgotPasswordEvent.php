@@ -9,9 +9,9 @@ class EmailForgotPasswordEvent extends Event
 {
     const NAME = 'forgot.password.event.email_fogot_password_event';
 
-	protected $user;
+    protected $user;
 
-	public function __construct(User $user)
+    public function __construct(User $user)
     {
         $this->user = $user;
     }

@@ -22,10 +22,10 @@ class UserRepository extends ServiceEntityRepository
              ->getOneOrNullResult();
     }
 
-
     public function getAll(int $page = 1, int $limit = 10)
     {
         $offset = ($page - 1) * $limit;
+
         return $this->createQueryBuilder('u')
             ->select()
             ->orderBy('u.id', 'ASC')

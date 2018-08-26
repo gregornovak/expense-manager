@@ -9,9 +9,9 @@ class EmailChangePasswordEvent extends Event
 {
     const NAME = 'change.password.event.email_change_password_event';
 
-	protected $user;
+    protected $user;
 
-	public function __construct(User $user)
+    public function __construct(User $user)
     {
         $this->user = $user;
     }

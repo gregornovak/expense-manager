@@ -2,7 +2,6 @@
 
 namespace App\EventListener;
 
-use Symfony\Component\HttpFoundation\Response;
 use App\Event\EmailForgotPasswordEvent;
 
 class MailForgotPasswordListener
@@ -37,15 +36,13 @@ class MailForgotPasswordListener
 
     protected function renderTemplate($name, $password, $email): string
     {
-		return $this->twig->render(
+        return $this->twig->render(
             'emails/forgotPassword.html.twig',
             [
                 'name' => $name,
                 'password' => $password,
-                'email' => $email
+                'email' => $email,
             ]
         );
     }
-
-
 }

@@ -5,16 +5,14 @@ namespace App\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use App\Form\ForgotPasswordType;
 use App\Entity\User;
 use App\Utils\PasswordGenerator;
 use App\Event\EmailForgotPasswordEvent;
-
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
 class ForgotPasswordController extends Controller
 {
     /**
@@ -36,16 +34,16 @@ class ForgotPasswordController extends Controller
                                     ->encodePassword($user, $passwordGenerator->generatePassword());
             $userRepository->setPassword($generatePassword);
 
-			$event = new EmailForgotPasswordEvent($userRepository);
+            $event = new EmailForgotPasswordEvent($userRepository);
             $dispatcher = $this->get('event_dispatcher');
-			$dispatcher->dispatch(EmailForgotPasswordEvent::NAME, $event);
+            $dispatcher->dispatch(EmailForgotPasswordEvent::NAME, $event);
 
-			$em->persist($userRepository);
+            $em->persist($userRepository);
             $em->flush();
 
             return new JsonResponse(['status' => 'ok']);
         }
 
-        throw new HttpException(400, "Invalid data");
+        throw new HttpException(400, 'Invalid data');
     }
 }

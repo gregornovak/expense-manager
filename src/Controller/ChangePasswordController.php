@@ -3,17 +3,13 @@
 namespace App\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use App\Form\ChangePasswordType;
 use App\Entity\User;
 use App\Event\EmailChangePasswordEvent;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-
 
 class ChangePasswordController extends Controller
 {
@@ -37,7 +33,7 @@ class ChangePasswordController extends Controller
 
             $event = new EmailChangePasswordEvent($userRepository);
             $dispatcher = $this->get('event_dispatcher');
-			$dispatcher->dispatch(EmailChangePasswordEvent::NAME, $event);
+            $dispatcher->dispatch(EmailChangePasswordEvent::NAME, $event);
 
             $em->persist($userRepository);
             $em->flush();
@@ -45,6 +41,6 @@ class ChangePasswordController extends Controller
             return new JsonResponse(['status' => 'ok']);
         }
 
-        throw new HttpException(400, "Invalid data");
+        throw new HttpException(400, 'Invalid data');
     }
 }

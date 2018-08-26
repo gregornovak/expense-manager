@@ -7,7 +7,6 @@ use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\AuthorizationHeaderTokenExtractor;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException;
@@ -63,13 +62,13 @@ class JwtAuthenticator extends AbstractGuardAuthenticator
     {
         $data = $this->jwtEncoder->decode($credentials);
 
-        if ($data == false) {
+        if (false == $data) {
             throw new CustomUserMessageAuthenticationException('Invalid Token');
         }
 
         $email = $data['email'];
         $user = $this->em->getRepository(User::class)
-            			 ->findOneBy(['email' => $email]);
+                         ->findOneBy(['email' => $email]);
 
         if (!$user) {
             throw new AuthenticationCredentialsNotFoundException();

@@ -13,7 +13,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -31,8 +30,7 @@ class UserController extends Controller
     public function __construct(
         SerializerInterface $serializer,
         ValidatorInterface $validator
-    )
-    {
+    ) {
         $this->serializer = $serializer;
         $this->validator = $validator;
     }
@@ -44,7 +42,9 @@ class UserController extends Controller
     public function index()
     {
         $repository = $this->getDoctrine()->getRepository(User::class);
-        dump($repository->getAll()); die;
+        dump($repository->getAll());
+        die;
+
         return new JsonResponse(['Franci Petek', 'Romelu Lukaku', 'Sergio Ramos']);
     }
 
@@ -78,8 +78,11 @@ class UserController extends Controller
     /**
      * @Route("/register", name="register_user")
      * @Method("POST")
+     *
      * @param Request $request
+     *
      * @return JsonResponse
+     *
      * @throws HttpException
      */
     public function registerUser(Request $request): JsonResponse
@@ -94,8 +97,8 @@ class UserController extends Controller
 
         $errors = $this->validator->validate($user);
 
-        if(count($errors) > 0) {
-            throw new HttpException(400, "Invalid data");
+        if (count($errors) > 0) {
+            throw new HttpException(400, 'Invalid data');
         }
 
         $now = new \DateTime('now', new \DateTimeZone('Europe/Ljubljana'));
@@ -118,8 +121,8 @@ class UserController extends Controller
         // $dispatcher = $this->get('event_dispatcher');
         // $dispatcher->dispatch(EmailRegistrationUserEvent::NAME, $event);
 
-        if(!$user->getId()) {
-            throw new HttpException(400, "Error saving data to database.");
+        if (!$user->getId()) {
+            throw new HttpException(400, 'Error saving data to database.');
         }
 
         $response = $this->serializer->serialize(
@@ -133,11 +136,14 @@ class UserController extends Controller
         return new JsonResponse($response, 201, [], true);
     }
 
-     /**
+    /**
      * @Route("/login", name="user_authentication")
      * @Method("POST")
+     *
      * @param Request $request
+     *
      * @return JsonResponse
+     *
      * @throws \HttpException
      * @throws NotFoundHttpException
      * @throws BadCredentialsException
@@ -147,12 +153,12 @@ class UserController extends Controller
         $data = $this->serializer->deserialize($request->getContent(), User::class, 'json');
         $errors = $this->validator->validate($data, null, ['login']);
 
-        if(count($errors) > 0) {
-            return new JsonResponse("Email and Password are required fields!", 400);
+        if (count($errors) > 0) {
+            return new JsonResponse('Email and Password are required fields!', 400);
         }
 
         $user = $this->getDoctrine()->getRepository(User::class)
-            ->findOneBy(['email'=> $data->getEmail()]);
+            ->findOneBy(['email' => $data->getEmail()]);
 
         if (!$user) {
             return new JsonResponse('User not found!', 404);
@@ -170,7 +176,7 @@ class UserController extends Controller
                 'email' => $user->getEmail(),
                 'firstname' => $user->getFirstname(),
                 'lastname' => $user->getLastname(),
-                'exp' => time() + 3600 // 1 hour expiration
+                'exp' => time() + 3600, // 1 hour expiration
         ]);
 
         return new JsonResponse(['token' => $token]);

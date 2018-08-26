@@ -6,8 +6,9 @@ use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
+
 /**
- * Implements the MySQL YEAR function which returns the year from Datetime
+ * Implements the MySQL YEAR function which returns the year from Datetime.
  */
 class Year extends FunctionNode
 {
@@ -23,6 +24,6 @@ class Year extends FunctionNode
 
     public function getSql(SqlWalker $sqlWalker)
     {
-        return 'YEAR(' . $sqlWalker->walkArithmeticPrimary($this->year) . ')';
+        return 'YEAR('.$sqlWalker->walkArithmeticPrimary($this->year).')';
     }
 }

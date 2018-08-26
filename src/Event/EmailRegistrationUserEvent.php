@@ -9,9 +9,9 @@ class EmailRegistrationUserEvent extends Event
 {
     const NAME = 'registration.user.event.email_registration_user_event';
 
-	protected $user;
+    protected $user;
 
-	public function __construct(User $user)
+    public function __construct(User $user)
     {
         $this->user = $user;
     }

@@ -117,7 +117,8 @@ class ExpenseController extends Controller
             throw new HttpException(400, 'You do not have permission to view this resource.');
         }
 
-        $response = $this->serializer->serialize(['success' => true, 'data' => $expense],
+        $response = $this->serializer->serialize(
+            ['success' => true, 'data' => $expense],
             'json',
             SerializationContext::create()
                 ->setGroups(['Default'])

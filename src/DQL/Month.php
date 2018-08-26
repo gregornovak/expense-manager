@@ -6,8 +6,9 @@ use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
+
 /**
- * Implements the MySQL MONTH function which returns the month from Datetime
+ * Implements the MySQL MONTH function which returns the month from Datetime.
  */
 class Month extends FunctionNode
 {
@@ -23,6 +24,6 @@ class Month extends FunctionNode
 
     public function getSql(SqlWalker $sqlWalker)
     {
-        return 'MONTH(' . $sqlWalker->walkArithmeticPrimary($this->month) . ')';
+        return 'MONTH('.$sqlWalker->walkArithmeticPrimary($this->month).')';
     }
 }

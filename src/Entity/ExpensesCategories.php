@@ -10,7 +10,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Expenses categories
+ * Expenses categories.
+ *
  * @ORM\Table(name="expenses_categories")
  * @ORM\Entity(repositoryClass="App\Repository\ExpensesCategoriesRepository")
  * @UniqueEntity("category")

@@ -2,7 +2,6 @@
 
 namespace App\EventListener;
 
-use Symfony\Component\HttpFoundation\Response;
 use App\Event\EmailRegistrationUserEvent;
 
 class MailRegistrationUserListener
@@ -26,7 +25,7 @@ class MailRegistrationUserListener
 
         $body = $this->renderTemplate($name, $email);
 
-		$message = (new \Swift_Message('Registration User Successfully!'))
+        $message = (new \Swift_Message('Registration User Successfully!'))
             ->setFrom($email)
             ->setTo($email)
             ->setBody($body, 'text/html')
@@ -37,13 +36,12 @@ class MailRegistrationUserListener
 
     protected function renderTemplate($name, $email): string
     {
-		return $this->twig->render(
+        return $this->twig->render(
             'emails/registration.html.twig',
             [
                 'name' => $name,
-				'email' => $email
+                'email' => $email,
             ]
         );
     }
-
 }

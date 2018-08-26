@@ -43,18 +43,19 @@ class ExpensesRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param int $user
-     * @param int $month
+     * @param int      $user
+     * @param int      $month
      * @param int|null $year
-     * @param int $page
-     * @param int $limit
-     * @return mixed
+     * @param int      $page
+     * @param int      $limit
      *
+     * @return mixed
      */
     public function getExpensesByMonth(int $user, int $month, ?int $year, int $page = 1, int $limit = 10)
     {
         $offset = ($page - 1) * $limit;
-        $year = $year ?? date("Y");
+        $year = $year ?? date('Y');
+
         return $this->createQueryBuilder('e')
             ->select()
             ->where('e.user = :user')

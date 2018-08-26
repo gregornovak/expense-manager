@@ -2,7 +2,6 @@
 
 namespace App\EventListener;
 
-use Symfony\Component\HttpFoundation\Response;
 use App\Event\EmailChangePasswordEvent;
 
 class MailChangePasswordListener
@@ -29,7 +28,7 @@ class MailChangePasswordListener
         $message = (new \Swift_Message('Change Password Successfully!'))
             ->setFrom($email)
             ->setTo($email)
-			->setBody($body, 'text/html')
+            ->setBody($body, 'text/html')
         ;
 
         $this->mailer->send($message);
@@ -37,12 +36,12 @@ class MailChangePasswordListener
 
     protected function renderTemplate($name, $password, $email): string
     {
-		return $this->twig->render(
+        return $this->twig->render(
             'emails/changePassword.html.twig',
             [
                 'name' => $name,
                 'password' => $password,
-				'email' => $email
+                'email' => $email,
             ]
         );
     }
