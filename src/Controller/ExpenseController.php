@@ -6,6 +6,7 @@ use App\Entity\Expenses;
 use App\Entity\ExpensesCategories;
 use App\Entity\User;
 use App\Security\JwtAuthenticator;
+use App\Utils\ExpenseAmountAggregator;
 use App\Utils\PaginatorChecker;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\SerializationContext;
@@ -29,19 +30,22 @@ class ExpenseController extends Controller
     private $authenticator;
     private $userProvider;
     private $paginatorChecker;
+    private $expenseAggregator;
 
     public function __construct(
         SerializerInterface $serializer,
         ValidatorInterface $validator,
         JwtAuthenticator $authenticator,
         UserProviderInterface $userProvider,
-        PaginatorChecker $paginatorChecker
+        PaginatorChecker $paginatorChecker,
+        ExpenseAmountAggregator $expenseAggregator
     ) {
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->authenticator = $authenticator;
         $this->userProvider = $userProvider;
         $this->paginatorChecker = $paginatorChecker;
+        $this->expenseAggregator = $expenseAggregator;
     }
 
     /**
@@ -379,18 +383,28 @@ class ExpenseController extends Controller
 
         $repository = $this->getDoctrine()->getRepository(Expenses::class);
 
-        if (!$page || !is_numeric($page) || !$limit || !is_numeric($limit)) {
-            $results = $repository->getExpensesByMonth($user->getId(), $month, $year);
+        // if (!$page || !is_numeric($page) || !$limit || !is_numeric($limit)) {
+        //     $results = $repository->getExpensesByMonth($user->getId(), $month, $year);
+        // } else {
+        //     $results = $repository->getExpensesByMonth($user->getId(), $month, $year, (int) $page, (int) $limit);
+        // }
+
+        if (is_numeric($page) &&
+            is_numeric($limit) &&
+            $this->paginatorChecker->isWithinRange($page, $limit)) {
+            $results = $repository->getExpensesByMonth($user->getId(), $month, $year, (int)$page, (int)$limit);
         } else {
-            $results = $repository->getExpensesByMonth($user->getId(), $month, $year, (int) $page, (int) $limit);
+            $results = $repository->getExpensesByMonth($user->getId(), $month, $year);
         }
 
         if (!$results) {
             return new JsonResponse(['data' => []]);
         }
 
+        $results['data'] = $this->expenseAggregator->aggregate($results['data']);
+
         $expenses = $this->serializer->serialize(
-            ['data' => $results],
+            $results,
             'json',
             SerializationContext::create()
                 ->setGroups(['Default'])

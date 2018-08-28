@@ -56,8 +56,8 @@ class ExpensesRepository extends ServiceEntityRepository
         $offset = ($page - 1) * $limit;
         $year = $year ?? date('Y');
 
-        return $this->createQueryBuilder('e')
-            ->select()
+        $results['data'] = $this->createQueryBuilder('e')
+            ->select(['e.id', 'e.amount', 'e.added'])
             ->where('e.user = :user')
             ->andWhere('MONTH(e.added) = :month')
             ->andWhere('YEAR(e.added) = :year')
@@ -65,9 +65,22 @@ class ExpensesRepository extends ServiceEntityRepository
             ->setParameter(':month', $month)
             ->setParameter(':year', $year)
             ->orderBy('e.added', 'ASC')
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
+            // ->setFirstResult($offset)
+            // ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
+
+        $results['count'] = $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->where('u.user = :user')
+            ->andWhere('MONTH(u.added) = :month')
+            ->andWhere('YEAR(u.added) = :year')
+            ->setParameter(':user', $user)
+            ->setParameter(':month', $month)
+            ->setParameter(':year', $year)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $results;
     }
 }
