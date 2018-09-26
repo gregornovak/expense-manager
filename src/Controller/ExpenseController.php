@@ -184,14 +184,16 @@ class ExpenseController extends Controller
             throw new HttpException(400, 'You must provide all required properties.');
         }
 
-        $now = new \DateTime('now', new \DateTimeZone('Europe/Ljubljana'));
+        $date = $data->getAdded()
+            ? $data->getAdded()
+            : new \DateTime('now', new \DateTimeZone('Europe/Ljubljana'));
 
         $expense = new Expenses();
         $expense->setUser($user);
         $expense->setExpensesCategory($category);
         $expense->setName($data->getName());
-        $expense->setAdded($now);
-        $expense->setUpdated($now);
+        $expense->setAdded($date);
+        $expense->setUpdated($date);
         $expense->setAmount($data->getAmount());
         $expense->setCurrency($data->getCurrency());
 
@@ -286,8 +288,13 @@ class ExpenseController extends Controller
         if (isset($category)) {
             $expense->setExpensesCategory($category);
         }
+
+        $date = $data->getUpdated()
+            ? $data->getUpdated()
+            : new \DateTime('now', new \DateTimeZone('Europe/Ljubljana'));
+
         $expense->setName($data->getName());
-        $expense->setUpdated(new \DateTime('now', new \DateTimeZone('Europe/Ljubljana')));
+        $expense->setUpdated($date);
         $expense->setAmount($data->getAmount());
         $expense->setCurrency($data->getCurrency());
 
